@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operations & Reports - Admin Command Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style> 
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        tbody tr { transition: all 0.2s ease-in-out; }
+        tbody tr:hover { transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); z-index: 10; position: relative; background-color: #ffffff; }
+        
+        .page-btn-active { background-color: #4f46e5; color: white; border-color: #4f46e5; }
+    </style>
+</head>
+<body class="text-slate-900 font-sans antialiased overflow-hidden flex h-screen w-full relative">
+
+<aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between hidden md:flex h-full flex-shrink-0 z-20 shadow-2xl">
+        <div class="flex-1 overflow-y-auto overflow-x-hidden pb-6 custom-scrollbar">
+            <div class="h-[72px] flex items-center px-6 border-b border-slate-800 sticky top-0 bg-slate-900/90 backdrop-blur-md z-10">
+                <a href="#" class="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
+                    <span class="bg-indigo-500 text-white font-black text-xl px-2 py-0.5 rounded-lg tracking-tight shadow-sm">iM</span>
+                    <span class="text-white font-black text-xl tracking-tight">ADMIN</span>
+                </a>
+            </div>
+            <nav class="px-4 pt-6 space-y-8">
+                
+                <div class="space-y-1.5">
+                    <p class="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3">Command Center</p>
+                    <a href="admin_dashoard.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                        Overview Analytics
+                    </a>
+                    <a href="active_reports.html" class="group flex items-center gap-3 px-3 py-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl text-sm font-bold border border-indigo-500/20 shadow-sm transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Active Operations
+                    </a>
+                </div>
+
+                <div class="space-y-1.5">
+                    <p class="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3 flex items-center gap-1.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Mediation Module</p>
+                    <a href="admin_luponrecords.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        Lupon Records
+                    </a>
+                </div>
+
+                <div class="space-y-1.5">
+                    <p class="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3 flex items-center gap-1.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg> Citizen Registry</p>
+                    <a href="admin_residents.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        Resident Profiles
+                    </a>
+                </div>
+
+                <div class="space-y-1.5">
+                    <p class="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3">Service Desks</p>
+                    <a href="admin_documents.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Document Approvals
+                        <span id="docBadge" class="ml-auto bg-indigo-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md shadow-sm">0</span>
+                    </a>
+                    <a href="map_incidents.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                        Map & Analytics
+                        <span id="incidentBadge" class="ml-auto bg-orange-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md shadow-sm">0</span>
+                    </a>
+                </div>
+
+                <div class="space-y-1.5">
+                    <p class="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3">System</p>
+                    <a href="admin_manage.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        Account Center
+                    </a>
+                    <a href="admin_staff.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        Staff Directory
+                    </a>
+                </div>
+            </nav>
+        </div>
+
+        <div class="p-4 border-t border-slate-800 bg-slate-900 z-10 shrink-0">
+            <div class="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="h-10 w-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm font-black shadow-inner overflow-hidden border border-indigo-500/30">
+                        <span id="userInitial">A</span>
+                    </div>
+                    <div class="overflow-hidden flex-1">
+                        <p id="adminName" class="text-sm font-black text-white truncate">Administration</p>
+                        <p class="text-[11px] font-bold text-slate-400 truncate mt-0.5">Barangay Secretary</p>
+                    </div>
+                </div>
+                <button onclick="logout()" class="w-full bg-slate-800 border border-slate-700 text-slate-300 py-2 rounded-xl text-xs font-bold hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/30 transition-all duration-200 shadow-sm flex items-center justify-center gap-2 group">
+                    Sign Out
+                    <svg class="w-3.5 h-3.5 opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col h-screen overflow-hidden bg-[#F1F5F9]">
+        
+        <header class="h-[72px] bg-white border-b border-slate-200 flex items-center justify-between px-8 flex-shrink-0 z-10 shadow-sm">
+            <div class="flex items-center gap-3">
+                <h1 class="text-xl font-black text-slate-800 tracking-tight">Operations & Reports</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="text-xs font-bold text-slate-500">Date: <span id="currentDate" class="text-slate-800"></span></span>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto">
+            <div class="p-6 md:p-10 max-w-7xl mx-auto space-y-6 flex flex-col min-h-full">
+                
+                <div class="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-3xl p-8 md:p-10 text-white shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-white opacity-5 blur-2xl"></div>
+                    <div class="relative z-10">
+                        <h2 class="text-3xl font-black tracking-tight mb-2">Operations Ledger</h2>
+                        <p class="text-blue-100 text-sm font-medium max-w-2xl leading-relaxed">
+                            Monitor public infrastructure issues, track confidential Lupon cases, and review archived, resolved, or settled reports from the community.
+                        </p>
+                    </div>
+                </div>
+
+                <section class="bg-white border border-slate-200 rounded-3xl shadow-sm flex flex-col flex-1 overflow-hidden">
+                    <div class="px-8 py-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center flex-wrap gap-4">
+                        <h3 class="text-lg font-black text-slate-800 tracking-tight" id="tableTitle">Active Cases Queue</h3>
+                        
+                        <div class="flex gap-1.5 bg-slate-200/60 p-1.5 rounded-xl">
+                            <button onclick="switchTab('active')" id="tab-active" class="px-5 py-2 text-xs font-black rounded-lg shadow-sm bg-white text-indigo-700 transition">Active</button>
+                            <button onclick="switchTab('resolved')" id="tab-resolved" class="px-5 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition">Resolved / Settled</button>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto min-h-[400px]">
+                        <table class="w-full text-left border-collapse min-w-[900px]">
+                            <thead>
+                                <tr class="bg-slate-50/80 text-[10px] uppercase tracking-widest text-slate-400 font-bold border-b border-slate-100">
+                                    <th class="px-8 py-5">Report ID & Date</th>
+                                    <th class="px-6 py-5">Category</th>
+                                    <th class="px-6 py-5">Type</th>
+                                    <th class="px-6 py-5">Current Status</th>
+                                    <th class="px-8 py-5 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activeTableBody" class="divide-y divide-slate-50 text-sm">
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="px-8 py-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between shrink-0 mt-auto">
+                        <p class="text-xs font-bold text-slate-500" id="paginationInfo">Showing 0 entries</p>
+                        <div class="flex gap-1" id="paginationButtons"></div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <div id="viewModal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-slate-900/70 backdrop-blur-sm transition-opacity p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full mx-4 my-8 overflow-hidden border border-slate-200 flex flex-col transform transition-transform duration-300 scale-95" id="modalContent">
+            
+            <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 sticky top-0 z-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h3 class="text-base font-black text-slate-800 tracking-tight">Report Details</h3>
+                </div>
+                <button onclick="closeViewModal()" class="text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition p-2 border border-transparent hover:border-red-100">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="p-8 bg-slate-50/30">
+                <div class="flex justify-between items-start mb-6 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Reference ID & Reporter</p>
+                        <h4 class="text-sm font-black text-slate-900 tracking-wider" id="modalReportId"></h4>
+                        <p class="text-[10px] font-bold text-slate-500 mt-1" id="modalReporter">Citizen</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Status</p>
+                        <p class="text-[10px] font-black uppercase tracking-widest text-indigo-700 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-200 inline-block shadow-sm" id="modalStatus"></p>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg> Statement of the Problem</p>
+                    <div class="bg-white border border-slate-200 p-5 rounded-2xl text-sm text-slate-700 leading-relaxed font-medium shadow-sm" id="modalDescription"></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 text-sm bg-white p-5 rounded-2xl border border-slate-200 shadow-sm mb-6">
+                    <div><span class="text-slate-400 font-bold block text-[10px] uppercase tracking-widest mb-1">Location</span> <span class="font-bold text-slate-800" id="modalLocation"></span></div>
+                    <div><span class="text-slate-400 font-bold block text-[10px] uppercase tracking-widest mb-1">Category</span> <span class="font-bold text-slate-800" id="modalCategory"></span></div>
+                </div>
+                
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> Photo Evidence</p>
+                    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex justify-center items-center min-h-[150px] p-2">
+                        <img id="modalEvidenceImage" src="" alt="Evidence" class="max-h-80 w-full object-contain rounded-xl hidden">
+                        <p id="modalNoEvidence" class="text-xs font-bold text-slate-400 py-10 hidden">No photo evidence attached.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="px-8 py-5 border-t border-slate-100 bg-white flex justify-end gap-3 shrink-0 shadow-[0_-4px_20px_rgba(0,0,0,0.02)] sticky bottom-0" id="modalActionFooter">
+                </div>
+        </div>
+    </div>
+
+    <script src="../database.js"></script>
+
+    <script>
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('currentDate').innerText = new Date().toLocaleDateString('en-US', options);
+
+        let currentTab = 'active';
+        let currentPage = 1;
+        let rowsPerPage = 10;
+        let currentFilteredData = [];
+
+        window.onload = function() {
+            initDatabase();
+            loadReports();
+        };
+
+        function logout() {
+            window.location.href = '../login/login.html';
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            currentPage = 1;
+            
+            document.getElementById('tab-active').className = tab === 'active' ? "px-5 py-2 text-xs font-black rounded-lg shadow-sm bg-white text-indigo-700 transition" : "px-5 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition";
+            document.getElementById('tab-resolved').className = tab === 'resolved' ? "px-5 py-2 text-xs font-black rounded-lg shadow-sm bg-white text-indigo-700 transition" : "px-5 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition";
+            
+            document.getElementById('tableTitle').innerText = tab === 'active' ? 'Active Cases Queue' : 'Resolved & Historical Records';
+            
+            loadReports();
+        }
+
+        function loadReports() {
+            let allReports = [];
+            try { allReports = getTable('brgy_reports'); } catch(e) {}
+            if(!allReports || allReports.length === 0) allReports = JSON.parse(localStorage.getItem('barangayReports')) || [];
+            
+            const resolvedStatuses = ['Resolved', 'Settled', 'Failed'];
+
+            currentFilteredData = allReports.filter(report => {
+                let safeStatus = report.status || 'Active'; 
+                let isResolvedState = resolvedStatuses.includes(safeStatus);
+                
+                if (currentTab === 'active') return !isResolvedState;
+                if (currentTab === 'resolved') return isResolvedState;
+            });
+            
+            currentFilteredData.reverse(); // Newest first
+            renderTable();
+        }
+
+        function renderTable() {
+            const tableBody = document.getElementById('activeTableBody');
+            tableBody.innerHTML = ''; 
+
+            let totalItems = currentFilteredData.length;
+            let totalPages = Math.ceil(totalItems / rowsPerPage);
+            if (currentPage > totalPages) currentPage = totalPages || 1;
+
+            let startIndex = (currentPage - 1) * rowsPerPage;
+            let endIndex = startIndex + rowsPerPage;
+            let paginatedData = currentFilteredData.slice(startIndex, endIndex);
+
+            if (totalItems === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-16 text-center text-slate-400">
+                            <svg class="w-10 h-10 mx-auto mb-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"></path></svg>
+                            <p class="text-sm font-bold tracking-wide">No records found for this category.</p>
+                        </td>
+                    </tr>`;
+                renderPaginationControls(totalItems, totalPages, startIndex, endIndex);
+                return;
+            }
+
+            paginatedData.forEach(report => {
+                let isDispute = report.reportType === 'Lupon Dispute' || report.isDispute;
+                let safeStatus = report.status || 'Active';
+                
+                let typeBadge = isDispute 
+                    ? `<span class="bg-orange-50 text-orange-600 border border-orange-100 px-2 py-0.5 rounded text-[9px] font-black tracking-widest uppercase shadow-sm">Dispute</span>` 
+                    : `<span class="bg-blue-50 text-blue-600 border border-blue-100 px-2 py-0.5 rounded text-[9px] font-black tracking-widest uppercase shadow-sm">Incident</span>`;
+
+                let statusColor = "text-indigo-700 bg-indigo-50 border-indigo-200"; 
+                if (safeStatus === 'In Progress' || safeStatus === 'Active') statusColor = "text-blue-700 bg-blue-50 border-blue-200";
+                else if (safeStatus.includes('Mediation') || safeStatus === 'Summon Issued') statusColor = "text-amber-700 bg-amber-50 border-amber-200";
+                else if (safeStatus === 'Resolved' || safeStatus === 'Settled') statusColor = "text-emerald-700 bg-emerald-50 border-emerald-200";
+                else if (safeStatus === 'Failed') statusColor = "text-red-700 bg-red-50 border-red-200";
+
+                const statusBadge = `<span class="px-2.5 py-1 rounded-[6px] text-[9px] font-black border ${statusColor} uppercase tracking-widest shadow-sm">${safeStatus}</span>`;
+                const refId = report.reportID || report.reportId;
+
+                // Action Buttons Logic
+                let actionButton = "";
+                if (currentTab === 'active') {
+                    // Smart Buttons: 'Settle' for Disputes, 'Resolve' for Incidents
+                    let quickAction = isDispute ? 
+                        `<button onclick="updateReportStatus('${refId}', 'Settled')" class="bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm transition">Settle</button>` :
+                        `<button onclick="updateReportStatus('${refId}', 'Resolved')" class="bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm transition">Resolve</button>`;
+                    
+                    actionButton = `
+                        <div class="flex justify-end gap-2">
+                            <button onclick="openViewModal('${refId}')" class="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm transition">View</button>
+                            ${quickAction}
+                        </div>`;
+                } else {
+                    actionButton = `<button onclick="openViewModal('${refId}')" class="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm transition">View Details</button>`;
+                }
+
+                const row = document.createElement('tr');
+                row.className = "hover:bg-slate-50 transition-colors";
+                row.innerHTML = `
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        <div class="font-black text-slate-900 text-xs tracking-wider">${refId}</div>
+                        <div class="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">${report.timestamp || report.dateSubmitted || 'Unknown Date'}</div>
+                    </td>
+                    <td class="px-6 py-5 whitespace-nowrap text-sm text-slate-700 font-bold">${report.category || report.disputeType || 'General Issue'}</td>
+                    <td class="px-6 py-5 whitespace-nowrap">${typeBadge}</td>
+                    <td class="px-6 py-5 whitespace-nowrap">${statusBadge}</td>
+                    <td class="px-8 py-5 whitespace-nowrap text-right">${actionButton}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+            renderPaginationControls(totalItems, totalPages, startIndex, endIndex);
+        }
+
+        function renderPaginationControls(totalItems, totalPages, start, end) {
+            document.getElementById('paginationInfo').innerText = `Showing ${totalItems === 0 ? 0 : start + 1} to ${Math.min(end, totalItems)} of ${totalItems} entries`;
+            let btnContainer = document.getElementById('paginationButtons');
+            btnContainer.innerHTML = '';
+
+            let prevDisabled = currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-200 hover:text-slate-800 cursor-pointer';
+            btnContainer.innerHTML += `<button onclick="if(currentPage > 1) { currentPage--; renderTable(); }" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-500 bg-white transition ${prevDisabled}">Prev</button>`;
+
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + 4);
+            if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
+
+            for (let i = startPage; i <= endPage; i++) {
+                let activeClass = i === currentPage ? 'page-btn-active shadow-sm' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50';
+                btnContainer.innerHTML += `<button onclick="currentPage = ${i}; renderTable();" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition ${activeClass}">${i}</button>`;
+            }
+
+            let nextDisabled = currentPage === totalPages || totalPages === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-200 hover:text-slate-800 cursor-pointer';
+            btnContainer.innerHTML += `<button onclick="if(currentPage < ${totalPages}) { currentPage++; renderTable(); }" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-500 bg-white transition ${nextDisabled}">Next</button>`;
+        }
+
+        // Unified Status Update Function
+        function updateReportStatus(reportId, newStatus) {
+            if (!confirm(`Are you sure you want to officially mark report ${reportId} as ${newStatus}?`)) return;
+
+            let allReports = [];
+            try { allReports = getTable('brgy_reports'); } catch(e) {}
+            if(!allReports || allReports.length === 0) allReports = JSON.parse(localStorage.getItem('barangayReports')) || [];
+
+            const index = allReports.findIndex(r => r.reportID === reportId || r.reportId === reportId);
+            if(index > -1) {
+                allReports[index].status = newStatus;
+                try { saveTable('brgy_reports', allReports); } 
+                catch(e) { localStorage.setItem('barangayReports', JSON.stringify(allReports)); }
+                
+                loadReports(); 
+                closeViewModal();
+            }
+        }
+
+        function openViewModal(reportId) {
+            let allReports = [];
+            try { allReports = getTable('brgy_reports'); } catch(e) {}
+            if(!allReports || allReports.length === 0) allReports = JSON.parse(localStorage.getItem('barangayReports')) || [];
+
+            const report = allReports.find(r => r.reportID === reportId || r.reportId === reportId);
+            if (!report) return;
+
+            document.getElementById('modalReportId').innerText = report.reportID || report.reportId;
+            document.getElementById('modalReporter').innerText = `By: ${report.residentName || 'Anonymous'}`;
+            
+            // Status Color logic for Modal
+            let safeStatus = report.status || 'Active';
+            let sColor = "text-indigo-700 bg-indigo-50 border-indigo-200"; 
+            if (safeStatus === 'Resolved' || safeStatus === 'Settled') sColor = "text-emerald-700 bg-emerald-50 border-emerald-200";
+            if (safeStatus === 'Failed') sColor = "text-red-700 bg-red-50 border-red-200";
+            document.getElementById('modalStatus').innerText = safeStatus;
+            document.getElementById('modalStatus').className = `text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border inline-block shadow-sm ${sColor}`;
+            
+            document.getElementById('modalDescription').innerText = report.description || 'No description provided.';
+            document.getElementById('modalLocation').innerText = report.location || "N/A";
+            document.getElementById('modalCategory').innerText = report.category || report.disputeType || 'General';
+
+            // 📸 Photo Evidence Logic
+            const imgEl = document.getElementById('modalEvidenceImage');
+            const noImgEl = document.getElementById('modalNoEvidence');
+            
+            if (report.photoEvidence && report.photoEvidence.startsWith('data:image')) {
+                imgEl.src = report.photoEvidence;
+                imgEl.classList.remove('hidden');
+                noImgEl.classList.add('hidden');
+            } else {
+                imgEl.src = "";
+                imgEl.classList.add('hidden');
+                noImgEl.classList.remove('hidden');
+            }
+
+            // Dynamic Modal Footer
+            const footer = document.getElementById('modalActionFooter');
+            if (currentTab === 'active') {
+                footer.innerHTML = `
+                    <button onclick="closeViewModal()" class="bg-white border border-slate-200 text-slate-600 px-6 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition">Cancel</button>
+                    <button onclick="updateReportStatus('${report.reportID}', 'Settled')" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-6 py-2.5 rounded-xl text-xs font-bold hover:bg-indigo-100 transition shadow-sm">Mark Settled</button>
+                    <button onclick="updateReportStatus('${report.reportID}', 'Resolved')" class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-6 py-2.5 rounded-xl text-xs font-bold hover:bg-emerald-100 transition shadow-sm transform hover:-translate-y-0.5">Mark Resolved</button>
+                `;
+            } else {
+                footer.innerHTML = `
+                    <button onclick="closeViewModal()" class="bg-slate-900 text-white px-8 py-2.5 rounded-xl text-xs font-bold hover:bg-black transition shadow-md transform hover:-translate-y-0.5">Close View</button>
+                `;
+            }
+
+            const modalEl = document.getElementById('viewModal');
+            const contentEl = document.getElementById('modalContent');
+            modalEl.classList.remove('hidden');
+            setTimeout(() => { contentEl.classList.remove('scale-95'); contentEl.classList.add('scale-100'); }, 10);
+        }
+
+        function closeViewModal() {
+            const contentEl = document.getElementById('modalContent');
+            contentEl.classList.remove('scale-100');
+            contentEl.classList.add('scale-95');
+            setTimeout(() => { document.getElementById('viewModal').classList.add('hidden'); }, 150);
+        }
+    </script>
+</body>
+</html>

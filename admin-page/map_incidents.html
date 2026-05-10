@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tumaga Geo-Intelligence - Admin Command Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+
+    <style> 
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; overflow: hidden; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; } 
+
+        #map { background: #02050a; z-index: 1; }
+        .leaflet-container { font-family: 'Inter', sans-serif; }
+        
+        .leaflet-popup-content-wrapper { 
+            background: rgba(6, 61, 189, 0.95) !important; 
+            backdrop-filter: blur(10px);
+            color: white; 
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        .leaflet-popup-tip { background: rgba(15, 23, 42, 0.95) !important; border-top: 1px solid rgba(99, 102, 241, 0.3); border-left: 1px solid rgba(99, 102, 241, 0.3); }
+        .leaflet-popup-close-button { color: #94a3b8 !important; }
+
+        .house-popup .leaflet-popup-content-wrapper { background: #ffffff !important; color: #1e293b; border: 1px solid #e2e8f0; padding: 0; overflow: hidden;}
+        .house-popup .leaflet-popup-content { margin: 12px 14px; }
+        .house-popup .leaflet-popup-tip { background: #ffffff !important; border: none; }
+        .house-popup .leaflet-popup-close-button { color: #64748b !important; right: 8px !important; top: 8px !important; }
+
+        .pulse-marker {
+            width: 20px; height: 20px;
+            background-color: #ef4444;
+            border-radius: 50%;
+            box-shadow: 0 0 0 rgba(239, 68, 68, 0.4);
+            animation: pulse 1.5s infinite;
+            border: 2px solid white;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        @keyframes zonePulse {
+            0% { fill-opacity: 0.1; }
+            50% { fill-opacity: 0.4; }
+            100% { fill-opacity: 0.1; }
+        }
+        .pulse-red-zone { animation: zonePulse 2s infinite; }
+
+        .hud-panel {
+            background: linear-gradient(135deg, rgba(225, 226, 230, 0.85) 0%, rgba(30, 41, 59, 0.95) 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+            z-index: 1000;
+        }
+
+        .ai-border { position: relative; }
+        .ai-border::before {
+            content: ""; position: absolute; inset: -1px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6, #6366f1);
+            background-size: 200% 100%;
+            border-radius: inherit; z-index: -1;
+            animation: moveGradient 3s linear infinite;
+            opacity: 0.6;
+        }
+        @keyframes moveGradient { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+        
+        .hud-overlay { position: absolute; pointer-events: none; width: 100%; height: 100%; inset: 0; z-index: 500; }
+        .hud-interactive { pointer-events: auto; }
+        .filter-active { background-color: #4f46e5 !important; color: white !important; border-color: #6366f1 !important; }
+
+        .custom-div-icon { background: transparent; border: none; }
+    </style>
+</head>
+<body class="flex h-screen w-full relative">
+
+<aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between hidden md:flex h-full flex-shrink-0 z-20 shadow-2xl">
+        <div class="flex-1 overflow-y-auto overflow-x-hidden pb-6 custom-scrollbar">
+            <div class="h-[72px] flex items-center px-6 border-b border-slate-800 sticky top-0 bg-slate-900/90 backdrop-blur-md z-10">
+                <a href="#" class="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
+                    <span class="bg-indigo-500 text-white font-black text-xl px-2 py-0.5 rounded-lg tracking-tight shadow-sm">iM</span>
+                    <span class="text-white font-black text-xl tracking-tight">ADMIN</span>
+                </a>
+            </div>
+            <nav class="px-4 pt-6 space-y-8">
+                
+                <div class="space-y-1.5">
+                    <p class="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3">Command Center</p>
+                    <a href="admin_dashoard.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                        Overview Analytics
+                    </a>
+                    <a href="active_reports.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Active Operations
+                    </a>
+                </div>
+
+                <div class="space-y-1.5">
+                    <p class="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3 flex items-center gap-1.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Mediation Module</p>
+                    <a href="admin_luponrecords.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        Lupon Records
+                    </a>
+                </div>
+
+                <div class="space-y-1.5">
+                    <p class="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3 flex items-center gap-1.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg> Citizen Registry</p>
+                    <a href="admin_residents.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        Resident Profiles
+                    </a>
+                </div>
+
+                <div class="space-y-1.5">
+                    <p class="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3">Service Desks</p>
+                    <a href="admin_documents.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Document Approvals
+                        <span id="docBadge" class="ml-auto bg-indigo-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md shadow-sm">0</span>
+                    </a>
+                    <a href="map_incidents.html" class="group flex items-center gap-3 px-3 py-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl text-sm font-bold border border-indigo-500/20 shadow-sm transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                        Map & Analytics
+                        <span id="incidentBadge" class="ml-auto bg-orange-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md shadow-sm">0</span>
+                    </a>
+                </div>
+
+                <div class="space-y-1.5">
+                    <p class="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3">System</p>
+                    <a href="admin_manage.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        Account Center
+                    </a>
+                    <a href="admin_staff.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        Staff Directory
+                    </a>
+                </div>
+            </nav>
+        </div>
+
+        <div class="p-4 border-t border-slate-800 bg-slate-900 z-10 shrink-0">
+            <div class="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="h-10 w-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm font-black shadow-inner overflow-hidden border border-indigo-500/30">
+                        <span id="userInitial">A</span>
+                    </div>
+                    <div class="overflow-hidden flex-1">
+                        <p id="adminName" class="text-sm font-black text-white truncate">Administration</p>
+                        <p class="text-[11px] font-bold text-slate-400 truncate mt-0.5">Barangay Secretary</p>
+                    </div>
+                </div>
+                <button onclick="logout()" class="w-full bg-slate-800 border border-slate-700 text-slate-300 py-2 rounded-xl text-xs font-bold hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/30 transition-all duration-200 shadow-sm flex items-center justify-center gap-2 group">
+                    Sign Out
+                    <svg class="w-3.5 h-3.5 opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                </button>
+            </div>
+        </div>
+    </aside>
+    
+    <div class="flex-1 relative h-screen w-full">
+        
+        <div id="map" class="absolute inset-0 w-full h-full"></div>
+
+        <div id="customHouseModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4 transition-opacity">
+            <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
+                <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
+                    <h3 class="font-black text-white text-lg flex items-center gap-2"><svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Drop House Pin</h3>
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-end mb-1.5">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Assign Household ID</label>
+                        <span id="unmappedCountText" class="text-[9px] font-bold text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/30">Scanning...</span>
+                    </div>
+                    
+                    <input type="text" id="houseIdInput" list="unmappedHousesList" placeholder="e.g. HH-1005" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white outline-none focus:border-emerald-500 shadow-inner">
+                    <datalist id="unmappedHousesList"></datalist>
+                    
+                    <p class="text-[9px] text-slate-500 mt-2 flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Select an unmapped ID, or type a new one.
+                    </p>
+                    
+                    <div class="flex justify-end gap-3 mt-6">
+                        <button onclick="cancelCustomDraw()" class="px-4 py-2 text-xs font-bold text-slate-400 hover:text-white transition">Cancel</button>
+                        <button onclick="confirmHousePin()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition shadow-lg">Save Pin</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="customAnnouncementModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4 transition-opacity">
+            <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+                <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
+                    <h3 class="font-black text-white text-lg flex items-center gap-2"><svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.297A8.609 8.609 0 0118 11.722a8.608 8.608 0 00-7-5.84zm-2 .596V18.674a6.733 6.733 0 01-4-5.596 6.733 6.733 0 014-5.596zM15.5 8.114a4.909 4.909 0 010 5.772"></path></svg> Broadcast Alert</h3>
+                    <span id="modalAnnouncementType" class="text-[9px] px-2 py-0.5 rounded font-black tracking-widest uppercase"></span>
+                </div>
+                <div class="p-5 space-y-4">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sender Name</label>
+                        <input type="text" id="announceSenderInput" value="Tumaga Command Center" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 mt-1.5 text-white outline-none focus:border-indigo-500 shadow-inner">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Message Payload</label>
+                        <textarea id="announceMsgInput" rows="3" placeholder="Enter emergency details or event info..." class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 mt-1.5 text-white outline-none focus:border-indigo-500 shadow-inner custom-scrollbar"></textarea>
+                    </div>
+                    <div class="flex justify-end gap-3 mt-2">
+                        <button onclick="cancelCustomDraw()" class="px-4 py-2 text-xs font-bold text-slate-400 hover:text-white transition">Cancel</button>
+                        <button onclick="confirmAnnouncementPin()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition shadow-lg flex items-center gap-2">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                            Transmit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="addFamilyModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4 transition-opacity">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col border border-slate-200">
+                <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                    <div>
+                        <h3 class="font-black text-slate-800 text-lg">Register Family</h3>
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest" id="familyModalHouseTarget">Target: Unknown</p>
+                    </div>
+                    <button onclick="closeAddFamilyModal()" class="text-slate-400 hover:text-red-500 transition-colors p-1"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                </div>
+                <div class="p-5 space-y-4 bg-white">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Family Name</label>
+                        <input type="text" id="familyNameInput" placeholder="e.g., Dela Cruz" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 mt-1 text-slate-800 outline-none focus:border-indigo-500 shadow-sm">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Members</label>
+                            <input type="number" id="familyMembersInput" min="1" placeholder="Qty" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 mt-1 text-slate-800 outline-none focus:border-indigo-500 shadow-sm">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Contact #</label>
+                            <input type="text" id="familyContactInput" placeholder="Optional" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 mt-1 text-slate-800 outline-none focus:border-indigo-500 shadow-sm">
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-3 mt-4 pt-4 border-t border-slate-100">
+                        <button onclick="closeAddFamilyModal()" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800 transition">Cancel</button>
+                        <button onclick="confirmAddFamily()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition shadow">Add Family</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="residentSearchModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4 transition-opacity">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[80vh] border border-slate-200">
+                <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                    <div>
+                        <h3 class="font-black text-slate-800 text-lg">Link Resident</h3>
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest" id="modalHouseTarget">Target: Unknown</p>
+                    </div>
+                    <button onclick="closeResidentSearch()" class="text-slate-400 hover:text-red-500 transition-colors p-1"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                </div>
+                <div class="p-4 bg-white border-b border-slate-100 shadow-sm z-10">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                        <input type="text" id="residentSearchInput" placeholder="Search by Name or Resident ID..." class="w-full bg-slate-50 border border-slate-300 rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none focus:border-indigo-500 focus:bg-white transition-all shadow-inner" onkeyup="filterResidentList()">
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto p-2 bg-slate-50/50 custom-scrollbar" id="residentListContainer">
+                </div>
+            </div>
+        </div>
+
+        <div class="hud-overlay p-6 flex flex-col justify-between">
+            
+            <div class="flex justify-between items-start gap-4 flex-wrap w-full">
+                <div class="flex flex-col gap-4">
+                    <div class="hud-panel hud-interactive rounded-2xl p-5 w-80">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_10px_#10b981] animate-pulse"></div>
+                            <h1 class="text-white font-black tracking-widest uppercase text-sm">Tumaga Command</h1>
+                        </div>
+                        <p class="text-slate-400 text-[10px] uppercase tracking-[0.2em] font-bold border-b border-slate-700/50 pb-3 mb-3">Geospatial Array Active</p>
+                        
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="text-center bg-slate-800/50 rounded-lg p-2">
+                                <p class="text-slate-500 text-[8px] font-black uppercase tracking-widest">Resolved</p>
+                                <p class="text-lg font-mono text-emerald-400 font-bold" id="totalResolved">0</p>
+                            </div>
+                            <div class="text-center bg-slate-800/50 rounded-lg p-2">
+                                <p class="text-slate-500 text-[8px] font-black uppercase tracking-widest">Active</p>
+                                <p class="text-lg font-mono text-red-400 font-bold" id="totalIssues">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hud-panel hud-interactive rounded-xl p-2 w-80 flex flex-col gap-2">
+                        <input type="text" id="searchBar" placeholder="Search Reporter or Category..." class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-indigo-500 transition">
+                        <div class="grid grid-cols-4 gap-2">
+                            <button onclick="applyFilter('all')" id="btn-all" class="filter-btn filter-active bg-slate-800 border border-slate-700 text-slate-300 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition">All</button>
+                            <button onclick="applyFilter('resolved')" id="btn-resolved" class="filter-btn bg-slate-800 border border-slate-700 text-slate-300 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition">Resolved</button>
+                            <button onclick="applyFilter('active')" id="btn-active" class="filter-btn bg-slate-800 border border-slate-700 text-slate-300 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition">Active</button>
+                            <button onclick="applyFilter('houses')" id="btn-houses" class="filter-btn bg-slate-800 border border-slate-700 text-slate-300 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition">Houses</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-4">
+                    <div class="hud-panel hud-interactive ai-border rounded-2xl p-5 w-96 relative overflow-hidden flex-shrink-0 max-w-full">
+                        <div class="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500 rounded-full blur-3xl opacity-20"></div>
+                        <div class="flex items-center justify-between mb-4 border-b border-indigo-500/20 pb-3 relative z-10">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-5 h-5 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+
+                            </div>
+                            <span class="text-[9px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded border border-indigo-500/30 tracking-widest uppercase animate-pulse">Live Sync</span>
+                        </div>
+
+                        <div class="space-y-4 relative z-10">
+                            <div>
+                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">System Status</p>
+                                <p class="text-sm text-slate-200 font-medium leading-relaxed bg-black/30 p-3 rounded-lg border border-white/5" id="aiAnomalyText">
+                                    Scanning Tumaga spatial parameters...
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-black text-emerald-400 uppercase tracking-widest mb-1.5 flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Insight</p>
+                                <p class="text-sm text-emerald-50 font-bold leading-relaxed bg-emerald-900/20 p-3 rounded-lg border border-emerald-500/20" id="aiActionText">
+                                    Awaiting user interaction...
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hud-panel hud-interactive rounded-2xl p-4 w-96 ml-auto">
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 border-b border-slate-700/50 pb-1">Operational Tools</p>
+                        
+                        <button onclick="startHouseMapping()" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition flex items-center justify-center gap-2 shadow border border-slate-700 mb-3">
+                            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                            Drop House Pin
+                        </button>
+                        
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="activateBroadcastMode('DANGER')" class="bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 transition-all shadow border border-red-500">
+                                <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                Danger Pin
+                            </button>
+
+                            <button onclick="activateBroadcastMode('EVENT')" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 transition-all shadow border border-emerald-500">
+                                <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                Event Pin
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-end gap-4 flex-wrap mt-auto w-full">
+                
+                <div id="profilePanel" class="hud-panel hud-interactive rounded-2xl p-5 w-96 opacity-0 transition-all duration-300 pointer-events-none transform translate-y-4 max-h-[500px] overflow-y-auto custom-scrollbar flex flex-col">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <span class="text-[9px] text-cyan-400 font-bold uppercase tracking-widest border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 rounded" id="panelHHID">REP-XXXX</span>
+                            <h3 class="text-white font-black text-lg mt-1" id="panelHeadName">Select a Report</h3>
+                        </div>
+                        <button onclick="closeProfilePanel()" class="text-slate-400 hover:text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                    </div>
+                    
+                    <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold border-b border-slate-700 pb-2 mb-3 mt-2" id="panelZone">Date: Unknown</p>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="bg-slate-800/50 p-2 rounded-lg border border-slate-700/50">
+                            <p class="text-[8px] text-slate-400 uppercase tracking-widest">Category</p>
+                            <p class="text-xs text-white font-bold truncate mt-1" id="panelCategory">General</p>
+                        </div>
+                        <div class="bg-slate-800/50 p-2 rounded-lg border border-slate-700/50">
+                            <p class="text-[8px] text-slate-400 uppercase tracking-widest">Status</p>
+                            <p class="text-[11px] font-black uppercase mt-1" id="panelStatus">ACTIVE</p>
+                        </div>
+                    </div>
+
+                    <div id="panelDisputeArea" class="bg-slate-900/50 border border-slate-700 p-3 rounded-lg mb-4 flex-1">
+                        <p class="text-[9px] text-slate-400 uppercase tracking-widest font-bold mb-1 flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg> Description</p>
+                        <p class="text-xs text-slate-200 font-medium whitespace-pre-wrap" id="panelDisputeDesc"></p>
+                    </div>
+
+                    <div class="bg-slate-800/50 border border-slate-700 p-2 rounded-lg text-center flex flex-col justify-center items-center min-h-[120px]">
+                        <p class="text-[9px] text-slate-400 uppercase tracking-widest font-bold mb-2 w-full text-left px-1">Evidence</p>
+                        <img id="panelImage" src="" alt="Evidence" class="hidden max-h-40 rounded-md object-contain border border-slate-600">
+                        <p id="panelNoImage" class="text-xs text-slate-500 italic py-4">No photo provided</p>
+                    </div>
+                </div>
+
+                <div class="hud-panel hud-interactive rounded-2xl p-4 ml-auto">
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 border-b border-slate-700/50 pb-1">Cartographic Legend</p>
+                    <div class="flex flex-col gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-3 h-3 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]"></div>
+                            <span class="text-xs text-slate-300 font-medium">Resolved Incident</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-4 h-4 rounded-full border-2 border-white bg-red-500 shadow-[0_0_8px_#ef4444] animate-pulse"></div>
+                            <span class="text-xs text-slate-300 font-medium">Active Incident / Dispute</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-5 h-5 rounded-full bg-slate-700 border border-slate-400 flex items-center justify-center text-white"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div>
+                            <span class="text-xs text-slate-300 font-medium">Household</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-5 h-5 rounded-full bg-emerald-500 border border-emerald-300 flex items-center justify-center text-white"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
+                            <span class="text-xs text-slate-300 font-medium">Event Announcement</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-5 h-5 rounded-full bg-red-600 border border-red-300 flex items-center justify-center text-white"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>
+                            <span class="text-xs text-slate-300 font-medium">Danger Announcement</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="../database.js"></script>
+
+    <script>
+        const TUMAGA_CENTER = [6.943738386606432, 122.07939292457402];
+        
+        let map;
+        let markerLayerGroup; 
+        let houseLayerGroup;
+        let announcementLayerGroup;
+        
+        let currentDrawAction = null;
+        let pendingDrawLayer = null; 
+        
+        let allMapNodes = []; 
+        let currentFilter = 'all';
+        let mapInteractionMode = "VIEW"; 
+        let announcementType = null; 
+        let currentTargetHouse = null; 
+
+        const houseIcon = L.divIcon({
+            html: `<div class="bg-slate-700 border-2 border-slate-400 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div>`,
+            className: 'custom-div-icon', iconSize: [32, 32], iconAnchor: [16, 16]
+        });
+
+        const alertDangerIcon = L.divIcon({
+            html: `<div class="bg-red-600 border-2 border-red-300 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-[0_0_15px_#ef4444] animate-pulse"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>`,
+            className: 'custom-div-icon', iconSize: [40, 40], iconAnchor: [20, 20]
+        });
+
+        const alertEventIcon = L.divIcon({
+            html: `<div class="bg-emerald-500 border-2 border-emerald-300 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-[0_0_15px_#10b981] animate-pulse"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>`,
+            className: 'custom-div-icon', iconSize: [40, 40], iconAnchor: [20, 20]
+        });
+
+        const purokDefs = [
+            { id: 1, name: "Purok 1", coords: [ [6.9460, 122.0790], [6.9460, 122.0830], [6.9420, 122.0830], [6.9420, 122.0790] ] },
+            { id: 2, name: "Purok 2", coords: [ [6.9460, 122.0830], [6.9460, 122.0870], [6.9420, 122.0870], [6.9420, 122.0830] ] },
+            { id: 3, name: "Purok 3", coords: [ [6.9420, 122.0790], [6.9420, 122.0830], [6.9380, 122.0830], [6.9380, 122.0790] ] },
+            { id: 4, name: "Purok 4", coords: [ [6.9420, 122.0830], [6.9420, 122.0870], [6.9380, 122.0870], [6.9380, 122.0830] ] },
+            { id: 5, name: "Purok 5", coords: [ [6.9380, 122.0790], [6.9380, 122.0830], [6.9340, 122.0830], [6.9340, 122.0790] ] },
+            { id: 6, name: "Purok 6", coords: [ [6.9380, 122.0830], [6.9380, 122.0870], [6.9340, 122.0870], [6.9340, 122.0830] ] },
+            { id: 7, name: "Purok 7", coords: [ [6.9340, 122.0790], [6.9340, 122.0870], [6.9310, 122.0870], [6.9310, 122.0790] ] }
+        ];
+        let purokPolygons = []; 
+
+        window.onload = function() {
+            try { initDatabase(); } catch(e) { console.log("DB init skipped."); }
+            initMap();
+            fetchDataFromDB();
+            renderMarkers();
+            updatePurokHealthStatus(); 
+            loadSavedHouseMarkers(); 
+            runInitialAI();
+            
+            document.getElementById('searchBar').addEventListener('keyup', (e) => applySearch(e.target.value));
+        };
+
+function initMap() {
+    // Initialize map with zoomControl set to false to manualy position it later
+    map = L.map('map', { zoomControl: false, minZoom: 15 }).setView(TUMAGA_CENTER, 17);
+    
+    const darkMode = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 20 });
+    const satelliteMode = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', { maxZoom: 20, attribution: 'Google' });
+    
+    // 1. Position Layer Control to Bottom Left
+    L.control.layers({ 
+        "Command Dark Mode": darkMode, 
+        "Satellite (For Tracing)": satelliteMode 
+    }, null, { position: 'bottomleft' }).addTo(map);
+
+    darkMode.addTo(map);
+
+    // 2. Position Zoom Control to Bottom Left
+    // It will stack vertically with the layer control
+    L.control.zoom({ position: 'bottomleft' }).addTo(map);
+
+    markerLayerGroup = L.layerGroup().addTo(map);
+    houseLayerGroup = L.layerGroup().addTo(map);
+    announcementLayerGroup = L.layerGroup().addTo(map);
+
+    purokDefs.forEach(purok => {
+        const poly = L.polygon(purok.coords, { color: '#ffffff', weight: 1, fillOpacity: 0.05 }).addTo(map);
+        poly.bindTooltip(purok.name, { permanent: true, direction: "center", className: "font-bold text-[10px] bg-white/80 border border-slate-300 rounded px-1 text-slate-800" });
+        purokPolygons.push({ id: purok.id, layer: poly, coords: purok.coords });
+    });
+
+    map.on(L.Draw.Event.CREATED, function (e) {
+        pendingDrawLayer = e.layer; 
+        
+        if (mapInteractionMode === "HOUSE_MAPPING") {
+            document.getElementById('houseIdInput').value = '';
+            if (typeof populateUnmappedHouses === "function") populateUnmappedHouses();
+            document.getElementById('customHouseModal').classList.remove('hidden');
+        } 
+        else if (mapInteractionMode === "ANNOUNCEMENT") {
+            document.getElementById('announceMsgInput').value = '';
+            let typeBadge = document.getElementById('modalAnnouncementType');
+            if(announcementType === 'DANGER') {
+                typeBadge.innerText = 'DANGER ALERT';
+                typeBadge.className = "text-[9px] px-2 py-0.5 rounded font-black tracking-widest uppercase bg-red-500/20 text-red-400 border border-red-500/30";
+            } else {
+                typeBadge.innerText = 'EVENT ALERT';
+                typeBadge.className = "text-[9px] px-2 py-0.5 rounded font-black tracking-widest uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+            }
+            document.getElementById('customAnnouncementModal').classList.remove('hidden');
+        }
+    });
+}
+
+        // ==========================================
+        // UNMAPPED HOUSE SCANNER
+        // ==========================================
+        function populateUnmappedHouses() {
+            let mappedHouses = JSON.parse(localStorage.getItem('brgy_house_markers')) || [];
+            let mappedIDs = mappedHouses.map(h => h.id);
+
+            let residents = JSON.parse(localStorage.getItem('brgy_residents')) || [];
+            let allAssignedIDs = new Set();
+            
+            residents.forEach(r => {
+                if (r.householdID && r.householdID !== "Unassigned" && r.householdID.trim() !== "") {
+                    allAssignedIDs.add(r.householdID);
+                }
+            });
+
+            let unmappedIDs = Array.from(allAssignedIDs).filter(id => !mappedIDs.includes(id));
+
+            const datalist = document.getElementById('unmappedHousesList');
+            datalist.innerHTML = ''; 
+            
+            unmappedIDs.forEach(id => {
+                let option = document.createElement('option');
+                option.value = id;
+                datalist.appendChild(option);
+            });
+            
+            const helperText = document.getElementById('unmappedCountText');
+            if (unmappedIDs.length > 0) {
+                helperText.innerText = `${unmappedIDs.length} Unmapped Detected`;
+                helperText.className = "text-[9px] font-bold text-orange-400 bg-orange-500/10 px-1.5 py-0.5 rounded border border-orange-500/30 animate-pulse";
+            } else {
+                helperText.innerText = "All DB Houses Mapped";
+                helperText.className = "text-[9px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/30";
+            }
+        }
+
+        // ==========================================
+        // CUSTOM MODAL CONFIRMATION LOGIC
+        // ==========================================
+        function cancelCustomDraw() {
+            pendingDrawLayer = null;
+            mapInteractionMode = "VIEW";
+            document.getElementById('customHouseModal').classList.add('hidden');
+            document.getElementById('customAnnouncementModal').classList.add('hidden');
+        }
+
+        function confirmHousePin() {
+            const houseID = document.getElementById('houseIdInput').value.trim();
+            if(!houseID) { alert("Please enter a House ID."); return; }
+            
+            if(pendingDrawLayer) {
+                let layerId = pendingDrawLayer._leaflet_id || Math.floor(Math.random() * 100000);
+                pendingDrawLayer._leaflet_id = layerId;
+                
+                const latlng = pendingDrawLayer.getLatLng();
+                saveHouseMarker(houseID, latlng);
+                pendingDrawLayer.setIcon(houseIcon);
+                pendingDrawLayer.bindPopup(() => generateHousePopup(houseID, layerId), { className: 'house-popup' });
+                houseLayerGroup.addLayer(pendingDrawLayer);
+            }
+            cancelCustomDraw(); 
+        }
+
+        window.deleteAnnouncement = function(id) {
+            announcementLayerGroup.eachLayer(layer => {
+                if (layer._leaflet_id === id) {
+                    announcementLayerGroup.removeLayer(layer);
+                }
+            });
+        };
+
+        function confirmAnnouncementPin() {
+            const message = document.getElementById('announceMsgInput').value;
+            const sender = document.getElementById('announceSenderInput').value;
+            const latlng = pendingDrawLayer.getLatLng();
+            sendOmniChannelBroadcast(message, announcementType, latlng.lat, latlng.lng, sender);
+        }
+
+        // ==========================================
+        // DATA EXTRACTION & MARKERS
+        // ==========================================
+        function fetchDataFromDB() {
+            allMapNodes = [];
+            let activeCount = 0, resolvedCount = 0;
+            let dbReports = [];
+            try { dbReports = getTable('brgy_reports'); } catch(e) {}
+            if(!dbReports || dbReports.length === 0) dbReports = JSON.parse(localStorage.getItem('barangayReports')) || [];
+
+            dbReports.forEach(report => {
+                if (report.coordinates && report.coordinates.lat && report.coordinates.lng) {
+                    let mapStatus = (report.status === 'Resolved' || report.status === 'Settled') ? 'Resolved' : 'Active'; 
+                    if (mapStatus === 'Resolved') resolvedCount++; else activeCount++;
+
+                    allMapNodes.push({
+                        id: report.reportID || report.reportId,
+                        lat: parseFloat(report.coordinates.lat),
+                        lng: parseFloat(report.coordinates.lng),
+                        head: report.residentName || report.complainantName || "Anonymous",
+                        date: report.timestamp || report.dateSubmitted || "Unknown Date",
+                        category: report.category || report.disputeType || "General",
+                        status: mapStatus,
+                        desc: report.description || "No description provided.",
+                        locationText: report.location || "Pinned on Map",
+                        image: report.photoEvidence || null
+                    });
+                }
+            });
+            document.getElementById('totalResolved').innerText = resolvedCount;
+            document.getElementById('totalIssues').innerText = activeCount;
+        }
+
+        function renderMarkers(searchQuery = "") {
+            markerLayerGroup.clearLayers();
+            allMapNodes.forEach(node => {
+                if(currentFilter === 'active' && node.status !== 'Active') return;
+                if(currentFilter === 'resolved' && node.status !== 'Resolved') return;
+                if(searchQuery && !node.head.toLowerCase().includes(searchQuery.toLowerCase()) && !node.category.toLowerCase().includes(searchQuery.toLowerCase())) return;
+
+                let isResolved = node.status === 'Resolved';
+                let fillColor = isResolved ? "#34d399" : "#ef4444";
+                let iconHtml = isResolved 
+                    ? `<div style="width:12px; height:12px; background:${fillColor}; border-radius:50%; box-shadow: 0 0 8px ${fillColor};"></div>`
+                    : `<div class="pulse-marker"></div>`;
+
+                let marker = L.marker([node.lat, node.lng], {icon: L.divIcon({ html: iconHtml, className: 'custom-div-icon' }) });
+                marker.on('click', () => { openProfilePanel(node); map.flyTo([node.lat, node.lng], 19, {duration: 0.5}); });
+                markerLayerGroup.addLayer(marker);
+            });
+        }
+
+        function updatePurokHealthStatus() {
+            purokPolygons.forEach(purok => {
+                const activeInPurok = allMapNodes.filter(node => 
+                    node.status === 'Active' && isPointInPolygon([node.lat, node.lng], purok.coords)
+                ).length;
+
+                let zoneColor = "#10b981"; let cssClass = ""; let opacity = 0.1;
+                if (activeInPurok >= 3) { zoneColor = "#ef4444"; cssClass = "pulse-red-zone"; opacity = 0.4; } 
+                else if (activeInPurok > 0) { zoneColor = "#f59e0b"; opacity = 0.2; }
+
+                purok.layer.setStyle({ fillColor: zoneColor, color: zoneColor, fillOpacity: opacity });
+                if(purok.layer._path) {
+                    purok.layer._path.classList.remove('pulse-red-zone');
+                    if(cssClass) purok.layer._path.classList.add(cssClass);
+                }
+            });
+        }
+
+        function isPointInPolygon(point, vs) {
+            var x = point[0], y = point[1], inside = false;
+            for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+                var xi = vs[i][0], yi = vs[i][1], xj = vs[j][0], yj = vs[j][1];
+                var intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+                if (intersect) inside = !inside;
+            }
+            return inside;
+        }
+
+        // ==========================================
+        // HOUSEHOLD LOGIC & DYNAMIC POPUPS
+        // ==========================================
+        function saveHouseMarker(id, latlng) {
+            let savedHouses = JSON.parse(localStorage.getItem('brgy_house_markers')) || [];
+            savedHouses.push({ id: id, lat: latlng.lat, lng: latlng.lng });
+            localStorage.setItem('brgy_house_markers', JSON.stringify(savedHouses));
+        }
+
+        function loadSavedHouseMarkers() {
+            let savedHouses = JSON.parse(localStorage.getItem('brgy_house_markers')) || [];
+            savedHouses.forEach(house => {
+                let marker = L.marker([house.lat, house.lng], { icon: houseIcon });
+                let layerId = marker._leaflet_id || Math.floor(Math.random() * 100000);
+                marker._leaflet_id = layerId;
+                
+                // Using a closure to build the popup dynamically when opened
+                marker.bindPopup(() => generateHousePopup(house.id, layerId), { className: 'house-popup' });
+                marker.addTo(houseLayerGroup);
+            });
+        }
+
+        function getResidentsByHousehold(hhid) {
+            let residents = JSON.parse(localStorage.getItem('brgy_residents')) || [];
+            return residents.filter(r => r.householdID === hhid);
+        }
+
+        // NEW: DELETE HOUSE FUNCTIONALITY
+        window.deleteHouse = function(houseID, layerID) {
+            if(confirm(`Are you sure you want to delete House ${houseID}? This will remove it from the map and unassign its residents.`)) {
+                // 1. Remove from Map
+                houseLayerGroup.eachLayer(layer => {
+                    if (layer._leaflet_id === layerID) {
+                        houseLayerGroup.removeLayer(layer);
+                    }
+                });
+
+                // 2. Remove from LocalStorage (Markers)
+                let savedHouses = JSON.parse(localStorage.getItem('brgy_house_markers')) || [];
+                savedHouses = savedHouses.filter(h => h.id !== houseID);
+                localStorage.setItem('brgy_house_markers', JSON.stringify(savedHouses));
+
+                // 3. Unassign Residents (Local DB)
+                let residents = JSON.parse(localStorage.getItem('brgy_residents')) || [];
+                let unassignedCount = 0;
+                residents.forEach(r => {
+                    if (r.householdID === houseID) {
+                        r.householdID = ""; 
+                        unassignedCount++;
+                    }
+                });
+                localStorage.setItem('brgy_residents', JSON.stringify(residents));
+
+                alert(`House ${houseID} deleted. ${unassignedCount} residents are now unassigned.`);
+                map.closePopup();
+            }
+        };
+
+        window.setHeadOfFamily = function(residentID, houseID) {
+            let residents = JSON.parse(localStorage.getItem('brgy_residents')) || [];
+            let targetRes = residents.find(r => r.residentID === residentID);
+            
+            if(targetRes) {
+                residents.forEach(r => {
+                    if(r.householdID === houseID && r.lastName === targetRes.lastName) {
+                        r.isHead = false;
+                        if(r.roleInFamily === 'Head') r.roleInFamily = 'Member';
+                    }
+                });
+                targetRes.isHead = true;
+                targetRes.roleInFamily = 'Head';
+                localStorage.setItem('brgy_residents', JSON.stringify(residents));
+                
+                alert(`✅ ${targetRes.firstName} is now classified as the Head of the ${targetRes.lastName} Family!`);
+                // The popup will auto-refresh next time it's clicked
+                map.closePopup();
+            }
+        };
+
+        // ENHANCED BEAUTIFUL POPUP UI
+        function generateHousePopup(houseID, layerID) {
+            let members = getResidentsByHousehold(houseID);
+            
+            let html = `
+                <div class="w-64 pb-1">
+                    <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-100">
+                        <b class="text-slate-800 text-[13px] tracking-tight flex items-center gap-1.5">
+                            <div class="w-6 h-6 rounded-md bg-slate-800 text-white flex items-center justify-center text-[10px] shadow-sm">🏠</div> 
+                            Unit ${houseID}
+                        </b>
+                        <button onclick="deleteHouse('${houseID}', ${layerID})" class="text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors p-1.5 rounded-lg" title="Delete House">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mb-2 uppercase tracking-widest font-bold">${members.length} Resident(s)</p>
+                    <div class="max-h-48 overflow-y-auto mb-3 custom-scrollbar pr-1">
+            `;
+
+            if (members.length === 0) {
+                html += `<p class="text-[11px] text-slate-500 italic py-4 text-center bg-slate-50 rounded-lg border border-slate-100 shadow-inner">No residents assigned yet.</p>`;
+            } else {
+                let resFamilies = {};
+                members.forEach(m => {
+                    let fId = m.familyID || m.lastName;
+                    if(!resFamilies[fId]) resFamilies[fId] = [];
+                    resFamilies[fId].push(m);
+                });
+
+                for (let fId in resFamilies) {
+                    let familyName = resFamilies[fId][0].lastName;
+                    html += `
+                        <div class="mb-3 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                            <div class="bg-slate-50 px-2.5 py-1.5 border-b border-slate-200 flex justify-between items-center">
+                                <p class="text-[10px] font-black text-slate-700 uppercase tracking-widest">${familyName} Family</p>
+                            </div>
+                            <ul class="p-1">
+                    `;
+                    
+                    resFamilies[fId].sort((a, b) => (b.isHead || b.roleInFamily === 'Head' ? 1 : 0) - (a.isHead || a.roleInFamily === 'Head' ? 1 : 0));
+
+                    resFamilies[fId].forEach(m => {
+                        let isHead = m.isHead || m.roleInFamily === 'Head';
+                        let badge = isHead 
+                            ? `<span class="bg-emerald-100 text-emerald-700 text-[8px] font-black px-1.5 py-0.5 rounded shadow-sm">HEAD</span>`
+                            : `<button onclick="setHeadOfFamily('${m.residentID}', '${houseID}')" class="text-slate-300 hover:text-emerald-500 transition" title="Set as Head"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></button>`;
+                        
+                        let nameColor = isHead ? "text-slate-900 font-bold" : "text-slate-600 font-medium";
+                        let iconColor = isHead ? "text-emerald-500" : "text-slate-400";
+
+                        html += `
+                            <li class="text-[11px] py-1.5 px-1.5 flex items-center justify-between hover:bg-slate-50 rounded transition group">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-3.5 h-3.5 ${iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg> 
+                                    <span class="${nameColor}">${m.firstName} ${m.lastName}</span>
+                                </div>
+                                <div>${badge}</div>
+                            </li>
+                        `;
+                    });
+                    html += `</ul></div>`;
+                }
+            }
+
+            html += `
+                </div>
+                <div class="grid grid-cols-2 gap-2 mt-1">
+                     <button onclick="openAddFamilyModal('${houseID}')" class="flex items-center justify-center gap-1 bg-emerald-600 text-white text-[9px] font-bold uppercase tracking-wider py-2 rounded-lg hover:bg-emerald-500 transition-colors shadow-sm"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg> Add Family</button>
+                     <button onclick="openResidentSearch('${houseID}')" class="flex items-center justify-center gap-1 bg-slate-800 text-white text-[9px] font-bold uppercase tracking-wider py-2 rounded-lg hover:bg-slate-700 transition-colors shadow-sm"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> Link Res.</button>
+                </div>
+            </div>`;
+            
+            return html;
+        }
+
+        window.openAddFamilyModal = function(houseID) {
+            currentTargetHouse = houseID;
+            document.getElementById('familyModalHouseTarget').innerText = `Target: House ${houseID}`;
+            document.getElementById('addFamilyModal').classList.remove('hidden');
+            document.getElementById('familyNameInput').value = '';
+            document.getElementById('familyMembersInput').value = '';
+            document.getElementById('familyContactInput').value = '';
+        };
+
+        window.closeAddFamilyModal = function() {
+            document.getElementById('addFamilyModal').classList.add('hidden');
+            currentTargetHouse = null;
+        };
+
+        window.confirmAddFamily = function() {
+            const name = document.getElementById('familyNameInput').value.trim();
+            const members = document.getElementById('familyMembersInput').value;
+            const contact = document.getElementById('familyContactInput').value.trim();
+
+            if (!name || !members) {
+                alert("Please provide the Family Name and Number of Members.");
+                return;
+            }
+
+            let families = JSON.parse(localStorage.getItem('brgy_families')) || [];
+            families.push({
+                householdID: currentTargetHouse,
+                name: name,
+                members: members,
+                contact: contact
+            });
+            localStorage.setItem('brgy_families', JSON.stringify(families));
+
+            alert(`✅ Successfully added the ${name} Family to House ${currentTargetHouse}`);
+            closeAddFamilyModal();
+            map.closePopup(); 
+        };
+
+        window.openResidentSearch = function(houseID) {
+            currentTargetHouse = houseID;
+            document.getElementById('modalHouseTarget').innerText = `Target: House ${houseID}`; 
+            document.getElementById('residentSearchModal').classList.remove('hidden');  
+            document.getElementById('residentSearchInput').value = '';  
+            populateResidentList('');   
+        };  
+        
+        function closeResidentSearch() { document.getElementById('residentSearchModal').classList.add('hidden'); currentTargetHouse = null; }
+
+        function populateResidentList(query) {
+            const container = document.getElementById('residentListContainer');
+            let residents = JSON.parse(localStorage.getItem('brgy_residents')) || [];
+            
+            if(residents.length === 0) {
+                residents = [
+                    { residentID: "RES-001", firstName: "Aljon", lastName: "Reyes", householdID: "" },
+                    { residentID: "RES-002", firstName: "Marjorie", lastName: "Prof", householdID: "" },
+                    { residentID: "RES-003", firstName: "Juan", lastName: "Dela Cruz", householdID: "HH-001" },
+                    { residentID: "RES-004", firstName: "Maria", lastName: "Dela Cruz", householdID: "HH-001" },
+                    { residentID: "RES-005", firstName: "Pedro", lastName: "Santos", householdID: "HH-001" }
+                ];
+                localStorage.setItem('brgy_residents', JSON.stringify(residents));
+            }
+
+            container.innerHTML = '';
+            let q = query.toLowerCase();
+
+            residents.forEach((r, index) => {
+                let fullName = `${r.firstName} ${r.lastName}`;
+                if(fullName.toLowerCase().includes(q) || r.residentID.toLowerCase().includes(q)) {
+                    let isAssigned = r.householdID ? `<span class="text-[8px] bg-slate-200 text-slate-500 px-1 rounded">In ${r.householdID}</span>` : '';
+                    container.innerHTML += `
+                        <div class="flex justify-between items-center p-3 hover:bg-white border-b border-slate-100 rounded-lg transition bg-slate-50 mb-1">
+                            <div><p class="text-sm font-bold text-slate-800">${fullName}</p><p class="text-[10px] text-slate-400 font-mono">${r.residentID} ${isAssigned}</p></div>
+                            <button onclick="confirmAddResident(${index})" class="bg-indigo-50 text-indigo-600 hover:bg-indigo-500 hover:text-white border border-indigo-100 px-3 py-1.5 rounded text-xs font-bold transition">Select</button>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        function filterResidentList() { populateResidentList(document.getElementById('residentSearchInput').value); }
+
+        window.confirmAddResident = function(index) {
+            let residents = JSON.parse(localStorage.getItem('brgy_residents')) || [];
+            let r = residents[index];
+            r.householdID = currentTargetHouse;
+            localStorage.setItem('brgy_residents', JSON.stringify(residents));
+            alert(`✅ Successfully linked ${r.firstName} ${r.lastName} to House ${currentTargetHouse}`);
+            closeResidentSearch();
+            map.closePopup(); 
+        };
+
+        function startHouseMapping() {
+            mapInteractionMode = "HOUSE_MAPPING";
+            alert("🏠 HOUSE PIN MODE:\nClick anywhere on the map to drop a House Pin.");
+            currentDrawAction = new L.Draw.Marker(map, { icon: houseIcon });
+            currentDrawAction.enable();
+        }
+
+        function activateBroadcastMode(type) {
+            mapInteractionMode = "ANNOUNCEMENT";
+            announcementType = type;
+            let typeName = type === 'DANGER' ? "Danger/Emergency" : "Event/Meeting";
+            alert(`📣 ${typeName} PIN MODE:\nClick anywhere on the map to place the Alert Pin.`);
+            let icon = type === 'DANGER' ? alertDangerIcon : alertEventIcon;
+            currentDrawAction = new L.Draw.Marker(map, { icon: icon }); 
+            currentDrawAction.enable();
+        }
+        
+        async function sendOmniChannelBroadcast(msg, type, lat, lng, senderName) {
+            const BOT_TOKEN = "8235212743:AAFxuxZ400Fv6yKN_PvCcxbBBIIRUZ0IDgU"; 
+            const CHAT_ID = "8552376540";
+            const MACRODROID_URL = "https://trigger.macrodroid.com/16063908-afcc-4b88-8718-1e29c0a5819c/send_alert";
+            const targetPhones = ["+639123456789", "+639987654321"];
+            const routeLink = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+
+            const header = type === 'DANGER' ? '🚨 <b>EMERGENCY ALERT</b> 🚨' : '📅 <b>BARANGAY EVENT</b>';
+            const telegramBody = {
+                chat_id: CHAT_ID,
+                text: `${header}\n\n<b>Sender:</b> ${senderName}\n<b>Message:</b> ${msg}\n\n📍 <a href="${routeLink}">Get Best Route (GPS)</a>`,
+                parse_mode: "HTML"
+            };
+            const smsText = `${type === 'DANGER' ? '🚨' : '📅'} ${msg}\nRoute: ${routeLink}\n- ${senderName}`;
+
+            try {
+                const telegramReq = fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(telegramBody)
+                });
+                const telegramLoc = fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendLocation`, {
+                    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: CHAT_ID, latitude: lat, longitude: lng })
+                });
+                const smsRequests = targetPhones.map(phone => {
+                    const url = `${MACRODROID_URL}?target_number=${encodeURIComponent(phone)}&alert_message=${encodeURIComponent(smsText)}`;
+                    return fetch(url, { mode: 'no-cors' });
+                });
+
+                await Promise.allSettled([telegramReq, telegramLoc, ...smsRequests]);
+                console.log("Omni-channel transmission complete.");
+                alert("✅ Broadcast Transmitted: Telegram + SMS");
+            } catch (err) {
+                console.error("Broadcast Error:", err);
+                alert("❌ System failed to reach one or more gateway channels.");
+            }
+        }
+
+        // ==========================================
+        // UI & HUD INTERACTIONS
+        // ==========================================
+        function applyFilter(filterType) {
+            currentFilter = filterType;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('filter-active', 'bg-indigo-600', 'text-white', 'border-indigo-500');
+                btn.classList.add('bg-slate-800', 'text-slate-300', 'border-slate-700');
+            });
+            let activeBtn = document.getElementById(`btn-${filterType}`);
+            activeBtn.classList.add('filter-active', 'bg-indigo-600', 'text-white', 'border-indigo-500');
+
+            if (filterType === 'houses') {
+                map.removeLayer(markerLayerGroup);
+                map.removeLayer(announcementLayerGroup);
+                document.getElementById('aiAnomalyText').innerHTML = `Focusing on Residential Asset Layer.`;
+            } else {
+                map.addLayer(markerLayerGroup);
+                map.addLayer(announcementLayerGroup);
+                renderMarkers(document.getElementById('searchBar').value);
+                updateAIAfterFilter(filterType);
+            }
+            closeProfilePanel();
+        }
+
+        function applySearch(query) { if(currentFilter !== 'houses') renderMarkers(query); }
+
+        function openProfilePanel(node) {
+            const panel = document.getElementById('profilePanel');
+            document.getElementById('panelHHID').innerText = node.id;
+            document.getElementById('panelHeadName').innerText = node.head;
+            document.getElementById('panelZone').innerText = `Date: ${node.date}`;
+            document.getElementById('panelCategory').innerText = node.category;
+            
+            let statusEl = document.getElementById('panelStatus');
+            statusEl.innerText = node.status;
+            
+            if(node.status === 'Active') {
+                statusEl.className = "text-[11px] font-black uppercase mt-1 text-red-400";
+                document.getElementById('panelDisputeArea').className = "bg-red-900/20 border border-red-500/30 p-3 rounded-lg mb-4 flex-1";
+                document.getElementById('aiAnomalyText').innerHTML = `Focusing on Report <span class="text-white">${node.id}</span>.`;
+            } else {
+                statusEl.className = "text-[11px] font-black uppercase mt-1 text-emerald-400";
+                document.getElementById('panelDisputeArea').className = "bg-emerald-900/20 border border-emerald-500/30 p-3 rounded-lg mb-4 flex-1";
+                document.getElementById('aiAnomalyText').innerHTML = `Viewing historical record <span class="text-white">${node.id}</span>.`;
+            }
+
+            document.getElementById('panelDisputeDesc').innerText = node.desc;
+            const imgEl = document.getElementById('panelImage');
+            const noImgEl = document.getElementById('panelNoImage');
+
+            if (node.image && node.image.startsWith('data:image')) {
+                imgEl.src = node.image; imgEl.classList.remove('hidden'); noImgEl.classList.add('hidden');
+            } else {
+                imgEl.classList.add('hidden'); noImgEl.classList.remove('hidden');
+            }
+
+            panel.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+        }
+
+        function closeProfilePanel() {
+            document.getElementById('profilePanel').classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+            map.setView(TUMAGA_CENTER, 17);
+        }
+
+        function runInitialAI() {
+            setTimeout(() => {
+                document.getElementById('aiAnomalyText').innerHTML = `Geo-DB Sync Complete. Purok Health Status computed.`;
+                document.getElementById('aiActionText').innerHTML = `Ready for Operations.`;
+            }, 1000);
+        }
+
+        function updateAIAfterFilter(filter) {
+            document.getElementById('aiAnomalyText').innerHTML = `<span class="text-indigo-400 animate-pulse">Syncing map layers...</span>`;
+            setTimeout(() => {
+                if(filter === 'active') document.getElementById('aiAnomalyText').innerHTML = `Isolated Active Reports.`;
+                else if(filter === 'resolved') document.getElementById('aiAnomalyText').innerHTML = `Displaying historical cases.`;
+                else runInitialAI();
+            }, 800);
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lupon Records - Admin Command Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style> 
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        tbody tr { transition: all 0.2s ease-in-out; }
+        tbody tr:hover { transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); z-index: 10; position: relative; background-color: #ffffff; }
+
+        /* Accordion Transitions */
+        .accordion-content { transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, padding 0.3s ease-in-out; overflow: hidden; }
+        .accordion-hidden { max-height: 0; opacity: 0; padding-top: 0; padding-bottom: 0; border-top-color: transparent; }
+        .accordion-visible { max-height: 1500px; opacity: 1; padding-top: 1.5rem; padding-bottom: 1.5rem; border-top-color: #f1f5f9; }
+        
+        .page-btn-active { background-color: #f59e0b; color: white; border-color: #f59e0b; }
+    </style>
+</head>
+<body class="text-slate-900 font-sans antialiased overflow-hidden flex h-screen w-full relative">
+
+<aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between hidden md:flex h-full flex-shrink-0 z-20 shadow-2xl">
+        <div class="flex-1 overflow-y-auto overflow-x-hidden pb-6 custom-scrollbar">
+            <div class="h-[72px] flex items-center px-6 border-b border-slate-800 sticky top-0 bg-slate-900/90 backdrop-blur-md z-10">
+                <a href="#" class="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
+                    <span class="bg-indigo-500 text-white font-black text-xl px-2 py-0.5 rounded-lg tracking-tight shadow-sm">iM</span>
+                    <span class="text-white font-black text-xl tracking-tight">ADMIN</span>
+                </a>
+            </div>
+            <nav class="px-4 pt-6 space-y-8">
+                
+                <div class="space-y-1.5">
+                    <p class="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3">Command Center</p>
+                    <a href="admin_dashoard.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                        Overview Analytics
+                    </a>
+                    <a href="active_reports.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Active Operations
+                    </a>
+                </div>
+
+                <div class="space-y-1.5">
+                    <p class="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3 flex items-center gap-1.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Mediation Module</p>
+                    <a href="admin_luponrecords.html" class="group flex items-center gap-3 px-3 py-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl text-sm font-bold border border-indigo-500/20 shadow-sm transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        Lupon Records
+                    </a>
+                </div>
+
+                <div class="space-y-1.5">
+                    <p class="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3 flex items-center gap-1.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg> Citizen Registry</p>
+                    <a href="admin_residents.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        Resident Profiles
+                    </a>
+                </div>
+
+                <div class="space-y-1.5">
+                    <p class="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3">Service Desks</p>
+                    <a href="admin_documents.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Document Approvals
+                        <span id="docBadge" class="ml-auto bg-indigo-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md shadow-sm">0</span>
+                    </a>
+                    <a href="map_incidents.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                        Map & Analytics
+                        <span id="incidentBadge" class="ml-auto bg-orange-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md shadow-sm">0</span>
+                    </a>
+                </div>
+
+                <div class="space-y-1.5">
+                    <p class="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3">System</p>
+                    <a href="admin_manage.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        Account Center
+                    </a>
+                    <a href="admin_staff.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        Staff Directory
+                    </a>
+                </div>
+            </nav>
+        </div>
+
+        <div class="p-4 border-t border-slate-800 bg-slate-900 z-10 shrink-0">
+            <div class="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="h-10 w-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm font-black shadow-inner overflow-hidden border border-indigo-500/30">
+                        <span id="userInitial">A</span>
+                    </div>
+                    <div class="overflow-hidden flex-1">
+                        <p id="adminName" class="text-sm font-black text-white truncate">Administration</p>
+                        <p class="text-[11px] font-bold text-slate-400 truncate mt-0.5">Barangay Secretary</p>
+                    </div>
+                </div>
+                <button onclick="logout()" class="w-full bg-slate-800 border border-slate-700 text-slate-300 py-2 rounded-xl text-xs font-bold hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/30 transition-all duration-200 shadow-sm flex items-center justify-center gap-2 group">
+                    Sign Out
+                    <svg class="w-3.5 h-3.5 opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col h-screen overflow-hidden bg-[#F1F5F9]">
+        
+        <header class="h-[72px] bg-white border-b border-slate-200 flex items-center justify-between px-8 flex-shrink-0 z-10 shadow-sm">
+            <div class="flex items-center gap-3">
+                <h1 class="text-xl font-black text-slate-800 tracking-tight">Lupon Master Ledger</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    Read-Only Oversight View
+                </span>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto">
+            <div class="p-6 md:p-10 max-w-7xl mx-auto space-y-6 flex flex-col min-h-full">
+                
+                <div class="bg-gradient-to-r from-amber-800 to-orange-900 rounded-3xl p-8 md:p-10 text-white shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-64 h-64 rounded-full bg-white opacity-5 blur-2xl transform translate-x-10 -translate-y-10"></div>
+                    <div class="relative z-10">
+                        <h2 class="text-3xl font-black tracking-tight mb-2">Katarungang Pambarangay Records</h2>
+                        <p class="text-amber-100 text-sm font-medium max-w-2xl leading-relaxed">
+                            View the comprehensive list of all active mediation sessions and past settled disputes handled by the Lupon Tagapamayapa.
+                        </p>
+                    </div>
+                </div>
+
+                <section class="bg-white border border-slate-200 rounded-3xl shadow-sm flex flex-col flex-1 mb-10 overflow-hidden">
+                    
+                    <div class="px-8 py-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center flex-wrap gap-4">
+                        <h2 class="text-lg font-black text-slate-800" id="tableTitle">All Dispute Cases</h2>
+                        
+                        <div class="flex gap-1.5 bg-slate-200/60 p-1.5 rounded-xl">
+                            <button onclick="switchTab('active')" id="tab-active" class="px-5 py-2 text-xs font-black rounded-lg shadow-sm bg-white text-amber-700 transition">Active Hearings</button>
+                            <button onclick="switchTab('resolved')" id="tab-resolved" class="px-5 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition">Settled / Closed</button>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto min-h-[400px]">
+                        <table class="w-full text-left border-collapse min-w-[900px]">
+                            <thead>
+                                <tr class="text-[10px] uppercase tracking-widest text-slate-400 font-bold border-b border-slate-100">
+                                    <th class="px-8 py-5">Reference ID</th>
+                                    <th class="px-6 py-5">Complainant</th>
+                                    <th class="px-6 py-5">Respondent</th>
+                                    <th class="px-6 py-5">Dispute Nature</th>
+                                    <th class="px-6 py-5">Lupon Status</th>
+                                    <th class="px-8 py-5 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="luponRecordsTable" class="divide-y divide-slate-50 text-sm">
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="px-8 py-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between shrink-0 mt-auto">
+                        <p class="text-xs font-bold text-slate-500" id="paginationInfo">Showing 0 entries</p>
+                        <div class="flex gap-1" id="paginationButtons"></div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <div id="fileModal" class="fixed inset-0 z-[100] flex items-center justify-center hidden bg-slate-900/60 backdrop-blur-sm transition-opacity p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full mx-4 overflow-hidden border border-slate-200 flex flex-col max-h-[90vh] min-h-[75vh] transform transition-transform duration-300 scale-95" id="modalContent">
+            
+            <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black text-slate-800 tracking-tight">Official Case Ledger</h3>
+                        <p class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Ref: <span id="modalCaseId" class="text-slate-700"></span></p>
+                    </div>
+                </div>
+                <button onclick="closeFileModal()" class="text-slate-400 hover:text-red-500 hover:bg-red-50 transition p-2 rounded-xl border border-transparent hover:border-red-100">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="p-8 overflow-y-auto flex-1 bg-slate-50/50 space-y-6">
+                
+                <div class="relative flex py-2 items-center mb-4">
+                    <div class="flex-grow border-t border-blue-200"></div>
+                    <span class="flex-shrink-0 mx-4 text-xs font-black tracking-widest text-blue-700 uppercase bg-blue-100 px-4 py-1 rounded-md">Lupon Mediation Process</span>
+                    <div class="flex-grow border-t border-blue-200"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center">
+                        <label class="block text-[10px] font-black text-blue-600 uppercase tracking-widest mb-2">Current Stage</label>
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 flex items-center gap-2 shadow-inner">
+                            <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                            <span class="text-sm font-bold text-slate-700" id="modalStage"></span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center">
+                        <label class="block text-[10px] font-black text-blue-600 uppercase tracking-widest mb-2">Hearing Schedule / Summon</label>
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 shadow-inner">
+                            <span class="text-sm font-bold text-slate-700" id="modalHearingDate"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <button onclick="toggleAccordion('accIntake')" class="w-full bg-slate-50 px-6 py-4 flex justify-between items-center hover:bg-slate-100 transition focus:outline-none">
+                        <span class="text-xs font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            Initial Complaint Details
+                        </span>
+                        <svg id="icon-accIntake" class="w-4 h-4 text-slate-400 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="accIntake" class="accordion-content accordion-visible">
+                        <div class="p-6 space-y-6 border-t border-slate-100 bg-white">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                    <p class="text-[10px] font-black text-blue-600 mb-1 tracking-wider uppercase">Complainant</p>
+                                    <p class="text-sm font-bold text-slate-900" id="modalComplainant"></p>
+                                </div>
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                    <p class="text-[10px] font-black text-red-600 mb-1 tracking-wider uppercase">Respondent(s)</p>
+                                    <div class="text-sm font-bold text-slate-900 flex flex-col gap-1" id="modalRespondent"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Statement of the Problem</p>
+                                <div class="bg-slate-50 border border-slate-100 p-4 rounded-xl">
+                                    <p class="text-sm text-slate-700 leading-relaxed font-medium whitespace-pre-wrap" id="modalInitialDesc"></p>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Photo Evidence</p>
+                                <div class="bg-slate-50 border border-slate-100 p-2 rounded-xl flex justify-center items-center min-h-[100px]">
+                                    <img id="modalEvidenceImage" src="" alt="Evidence" class="max-h-64 w-full object-contain rounded-lg hidden">
+                                    <p id="modalNoEvidence" class="text-xs font-bold text-slate-400 py-6 hidden">No photo evidence attached.</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <button onclick="toggleAccordion('acc1')" class="w-full bg-slate-50 px-6 py-4 flex justify-between items-center hover:bg-slate-100 transition focus:outline-none">
+                        <span class="text-xs font-black text-amber-700 uppercase tracking-widest flex items-center gap-2">
+                            <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            1st Hearing Records
+                        </span>
+                        <svg id="icon-acc1" class="w-4 h-4 text-slate-400 transform transition-transform duration-300 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="acc1" class="accordion-content accordion-hidden">
+                        <div class="p-6 space-y-5 border-t border-slate-100">
+                            <div>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Discussions / Transcripts</p>
+                                <div class="bg-slate-50 border border-slate-100 p-4 rounded-xl"><p id="modalHearing1Notes" class="text-xs text-slate-700 leading-relaxed font-medium whitespace-pre-wrap"></p></div>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Witness Statements</p>
+                                <div class="bg-slate-50 border border-slate-100 p-4 rounded-xl"><p id="modalHearing1Witnesses" class="text-xs text-slate-700 leading-relaxed font-medium whitespace-pre-wrap"></p></div>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Outcome / Decision</p>
+                                <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl shadow-inner"><p id="modalHearing1Decision" class="text-xs text-emerald-800 leading-relaxed font-bold whitespace-pre-wrap"></p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <button onclick="toggleAccordion('acc2')" class="w-full bg-slate-50 px-6 py-4 flex justify-between items-center hover:bg-slate-100 transition focus:outline-none">
+                        <span class="text-xs font-black text-amber-700 uppercase tracking-widest flex items-center gap-2">
+                            <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            2nd Hearing Records
+                        </span>
+                        <svg id="icon-acc2" class="w-4 h-4 text-slate-400 transform transition-transform duration-300 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="acc2" class="accordion-content accordion-hidden">
+                        <div class="p-6 space-y-5 border-t border-slate-100">
+                            <div>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Discussions / Transcripts</p>
+                                <div class="bg-slate-50 border border-slate-100 p-4 rounded-xl"><p id="modalHearing2Notes" class="text-xs text-slate-700 leading-relaxed font-medium whitespace-pre-wrap"></p></div>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Witness Statements</p>
+                                <div class="bg-slate-50 border border-slate-100 p-4 rounded-xl"><p id="modalHearing2Witnesses" class="text-xs text-slate-700 leading-relaxed font-medium whitespace-pre-wrap"></p></div>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Outcome / Decision</p>
+                                <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl shadow-inner"><p id="modalHearing2Decision" class="text-xs text-emerald-800 leading-relaxed font-bold whitespace-pre-wrap"></p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <button onclick="toggleAccordion('acc3')" class="w-full bg-slate-50 px-6 py-4 flex justify-between items-center hover:bg-slate-100 transition focus:outline-none">
+                        <span class="text-xs font-black text-amber-700 uppercase tracking-widest flex items-center gap-2">
+                            <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            3rd Hearing Records
+                        </span>
+                        <svg id="icon-acc3" class="w-4 h-4 text-slate-400 transform transition-transform duration-300 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="acc3" class="accordion-content accordion-hidden">
+                        <div class="p-6 space-y-5 border-t border-slate-100">
+                            <div>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Discussions / Transcripts</p>
+                                <div class="bg-slate-50 border border-slate-100 p-4 rounded-xl"><p id="modalHearing3Notes" class="text-xs text-slate-700 leading-relaxed font-medium whitespace-pre-wrap"></p></div>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Witness Statements</p>
+                                <div class="bg-slate-50 border border-slate-100 p-4 rounded-xl"><p id="modalHearing3Witnesses" class="text-xs text-slate-700 leading-relaxed font-medium whitespace-pre-wrap"></p></div>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Outcome / Decision</p>
+                                <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl shadow-inner"><p id="modalHearing3Decision" class="text-xs text-emerald-800 leading-relaxed font-bold whitespace-pre-wrap"></p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 rounded-2xl border border-amber-200 shadow-sm overflow-hidden">
+                    <button onclick="toggleAccordion('accFinal')" class="w-full bg-amber-100 px-6 py-4 flex justify-between items-center hover:bg-amber-200 transition focus:outline-none">
+                        <span class="text-xs font-black text-amber-900 uppercase tracking-widest flex items-center gap-2">
+                            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Final Case Resolution
+                        </span>
+                        <svg id="icon-accFinal" class="w-4 h-4 text-amber-700 transform transition-transform duration-300 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="accFinal" class="accordion-content accordion-hidden">
+                        <div class="p-8 border-t border-amber-200 bg-white/50 text-center">
+                            <p id="modalDecisionNotes" class="text-sm text-slate-800 leading-relaxed font-bold whitespace-pre-wrap text-left"></p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="px-8 py-5 border-t border-slate-100 bg-white flex justify-end shrink-0 z-10 shadow-[0_-4px_20px_rgba(0,0,0,0.02)] gap-3">
+                <button onclick="window.print()" class="bg-white border border-slate-200 text-slate-700 px-6 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition shadow-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Print Dossier
+                </button>
+                <button onclick="closeFileModal()" class="bg-slate-900 text-white px-8 py-2.5 rounded-xl text-xs font-bold shadow-md hover:bg-black transition">
+                    Close File
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../database.js"></script>
+
+    <script>
+        let currentTab = 'active';
+        let currentPage = 1;
+        let rowsPerPage = 10;
+        let currentFilteredData = [];
+
+        window.onload = function() {
+            initDatabase();
+            loadLuponRecords();
+        };
+
+        function logout() {
+            window.location.href = '../login/login.html';
+        }
+
+        // TABS
+        function switchTab(tab) {
+            currentTab = tab;
+            currentPage = 1;
+            
+            document.getElementById('tab-active').className = tab === 'active' ? "px-5 py-2 text-xs font-black rounded-lg shadow-sm bg-white text-amber-700 transition" : "px-5 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition";
+            document.getElementById('tab-resolved').className = tab === 'resolved' ? "px-5 py-2 text-xs font-black rounded-lg shadow-sm bg-white text-amber-700 transition" : "px-5 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition";
+            
+            document.getElementById('tableTitle').innerText = tab === 'active' ? 'Active Hearings' : 'Settled & Historical Disputes';
+            
+            loadLuponRecords();
+        }
+
+        // ACCORDIONS
+        function toggleAccordion(id) {
+            const content = document.getElementById(id);
+            const icon = document.getElementById(`icon-${id}`);
+            
+            if (content.classList.contains('accordion-hidden')) {
+                content.classList.remove('accordion-hidden');
+                content.classList.add('accordion-visible');
+                if(icon) icon.classList.remove('rotate-180');
+            } else {
+                content.classList.add('accordion-hidden');
+                content.classList.remove('accordion-visible');
+                if(icon) icon.classList.add('rotate-180');
+            }
+        }
+
+        // RENDER TABLE
+        function loadLuponRecords() {
+            const tableBody = document.getElementById('luponRecordsTable');
+            tableBody.innerHTML = ''; 
+
+            let allReports = [];
+            try { allReports = getTable('brgy_reports'); } catch(e) {}
+            if(!allReports || allReports.length === 0) allReports = JSON.parse(localStorage.getItem('barangayReports')) || [];
+            
+            const resolvedStatuses = ['Resolved', 'Settled', 'Failed'];
+
+            currentFilteredData = allReports.filter(report => {
+                let safeStatus = report.status || 'Active'; 
+                let isLupon = report.reportType === 'Lupon Dispute' || report.isDispute === true;
+                let isResolvedState = resolvedStatuses.includes(safeStatus);
+                
+                // Keep only Lupon Cases that have passed initial verification
+                if (!isLupon || safeStatus === 'Pending Verification') return false;
+
+                if (currentTab === 'active') return !isResolvedState;
+                if (currentTab === 'resolved') return isResolvedState;
+            });
+            
+            currentFilteredData.reverse(); 
+            
+            let totalItems = currentFilteredData.length;
+            let totalPages = Math.ceil(totalItems / rowsPerPage);
+            if (currentPage > totalPages) currentPage = totalPages || 1;
+
+            let startIndex = (currentPage - 1) * rowsPerPage;
+            let endIndex = startIndex + rowsPerPage;
+            let paginatedData = currentFilteredData.slice(startIndex, endIndex);
+
+            if (totalItems === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-6 py-16 text-center text-slate-400">
+                            <svg class="w-10 h-10 mx-auto mb-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                            <p class="text-sm font-bold tracking-wide">No Lupon records available.</p>
+                        </td>
+                    </tr>`;
+                renderPaginationControls(totalItems, totalPages, startIndex, endIndex);
+                return;
+            }
+
+            paginatedData.forEach(report => {
+                let safeStatus = report.status || 'Active';
+                let statusColor = "text-purple-700 bg-purple-50 border-purple-200";
+                if(safeStatus === 'Settled' || safeStatus === 'Resolved') statusColor = "text-emerald-700 bg-emerald-50 border-emerald-200";
+                if(safeStatus === 'Failed') statusColor = "text-red-700 bg-red-50 border-red-200";
+                if(safeStatus === 'Sent to Lupon' || safeStatus === 'Summon Issued') statusColor = "text-blue-700 bg-blue-50 border-blue-200";
+
+                const statusBadge = `<span class="px-2.5 py-1.5 rounded-lg text-[10px] font-black border ${statusColor} uppercase tracking-widest shadow-sm">${safeStatus}</span>`;
+
+                let respondentText = "N/A";
+                if(report.respondents && Array.isArray(report.respondents) && report.respondents.length > 0) {
+                    respondentText = report.respondents.length > 1 ? `${report.respondents[0]} <span class="text-slate-400 text-[10px] font-bold">+${report.respondents.length - 1} more</span>` : report.respondents[0];
+                } else if (report.respondentName) { respondentText = report.respondentName; }
+
+                const row = document.createElement('tr');
+                row.className = "hover:bg-slate-50 transition-colors";
+                row.innerHTML = `
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        <div class="font-black text-slate-900 text-sm">${report.reportID || report.reportId}</div>
+                        <div class="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-widest">${report.timestamp || report.dateSubmitted || 'Unknown Date'}</div>
+                    </td>
+                    <td class="px-6 py-5 whitespace-nowrap font-bold text-slate-800 text-sm">${report.residentName || report.complainantName}</td>
+                    <td class="px-6 py-5 whitespace-nowrap font-bold text-slate-800 text-sm">${respondentText}</td>
+                    <td class="px-6 py-5 whitespace-nowrap text-xs font-semibold text-slate-600">${report.category || report.disputeType}</td>
+                    <td class="px-6 py-5 whitespace-nowrap">${statusBadge}</td>
+                    <td class="px-8 py-5 whitespace-nowrap text-right">
+                        <button onclick="openFileModal('${report.reportID || report.reportId}')" class="bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition transform hover:-translate-y-0.5">View Ledger</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            renderPaginationControls(totalItems, totalPages, startIndex, endIndex);
+        }
+
+        function renderPaginationControls(totalItems, totalPages, start, end) {
+            document.getElementById('paginationInfo').innerText = `Showing ${totalItems === 0 ? 0 : start + 1} to ${Math.min(end, totalItems)} of ${totalItems} entries`;
+            let btnContainer = document.getElementById('paginationButtons');
+            btnContainer.innerHTML = '';
+
+            let prevDisabled = currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-200 hover:text-slate-800 cursor-pointer';
+            btnContainer.innerHTML += `<button onclick="if(currentPage > 1) { currentPage--; loadLuponRecords(); }" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-500 bg-white transition ${prevDisabled}">Prev</button>`;
+
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + 4);
+            if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
+
+            for (let i = startPage; i <= endPage; i++) {
+                let activeClass = i === currentPage ? 'page-btn-active shadow-sm' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50';
+                btnContainer.innerHTML += `<button onclick="currentPage = ${i}; loadLuponRecords();" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition ${activeClass}">${i}</button>`;
+            }
+
+            let nextDisabled = currentPage === totalPages || totalPages === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-200 hover:text-slate-800 cursor-pointer';
+            btnContainer.innerHTML += `<button onclick="if(currentPage < ${totalPages}) { currentPage++; loadLuponRecords(); }" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-500 bg-white transition ${nextDisabled}">Next</button>`;
+        }
+
+        // ==========================================
+        // DYNAMIC VIEW MODAL LOGIC
+        // ==========================================
+        function openFileModal(reportId) {
+            let allReports = [];
+            try { allReports = getTable('brgy_reports'); } catch(e) {}
+            if(!allReports || allReports.length === 0) allReports = JSON.parse(localStorage.getItem('barangayReports')) || [];
+
+            const report = allReports.find(r => r.reportID === reportId || r.reportId === reportId);
+            if (!report) return;
+
+            const setContent = (id, value, fallback) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.innerText = value && value.trim() !== "" ? value : fallback;
+                    if(!value || value.trim() === "") el.classList.add('text-slate-400', 'italic');
+                    else el.classList.remove('text-slate-400', 'italic');
+                }
+            };
+
+            // 1. Header & General Info
+            document.getElementById('modalCaseId').innerText = report.reportID || report.reportId;
+            let currentStatus = report.status || 'Active';
+            document.getElementById('modalStage').innerText = currentStatus;
+
+            // Date Logic
+            if (currentStatus === 'Settled' || currentStatus === 'Failed' || currentStatus === 'Resolved') {
+                document.getElementById('modalHearingDate').innerHTML = '<span class="text-slate-400 uppercase tracking-widest text-[10px]">Case Closed</span>';
+            } else { 
+                document.getElementById('modalHearingDate').innerText = report.hearingDate || "Schedule TBA"; 
+            }
+
+            // 2. Intake Details
+            setContent('modalComplainant', report.residentName || report.complainantName, "N/A");
+            setContent('modalInitialDesc', report.description, "No statement provided.");
+            
+            if(report.respondents && Array.isArray(report.respondents) && report.respondents.length > 0) {
+                document.getElementById('modalRespondent').innerHTML = report.respondents.map(r => `<div>• ${r}</div>`).join('');
+            } else { setContent('modalRespondent', report.respondentName, "None listed"); }
+
+            // 📸 Photo Evidence Logic
+            const imgEl = document.getElementById('modalEvidenceImage');
+            const noImgEl = document.getElementById('modalNoEvidence');
+            if (report.photoEvidence && report.photoEvidence.startsWith('data:image')) {
+                imgEl.src = report.photoEvidence;
+                imgEl.classList.remove('hidden');
+                noImgEl.classList.add('hidden');
+            } else {
+                imgEl.src = "";
+                imgEl.classList.add('hidden');
+                noImgEl.classList.remove('hidden');
+            }
+
+            // 3. Populate Hearing Data
+            setContent('modalHearing1Notes', report.discussionNotes, "No transcripts recorded yet.");
+            setContent('modalHearing1Witnesses', report.witnessStatements, "No statements recorded yet.");
+            setContent('modalHearing1Decision', report.hearing1Decision, "No decision recorded yet.");
+
+            setContent('modalHearing2Notes', report.hearing2Notes, "No transcripts recorded yet.");
+            setContent('modalHearing2Witnesses', report.witnessStatements2, "No statements recorded yet.");
+            setContent('modalHearing2Decision', report.hearing2Decision, "No decision recorded yet.");
+
+            setContent('modalHearing3Notes', report.hearing3Notes, "No transcripts recorded yet.");
+            setContent('modalHearing3Witnesses', report.witnessStatements3, "No statements recorded yet.");
+            setContent('modalHearing3Decision', report.hearing3Decision, "No decision recorded yet.");
+
+            setContent('modalDecisionNotes', report.decisionNotes, "No final resolution terms reached yet.");
+
+            // ==========================================
+            // 🌟 DYNAMIC ACCORDION VISIBILITY LOGIC
+            // ==========================================
+            // First, hide all hearing accordions (their outer containers)
+            document.getElementById('acc1').parentElement.classList.add('hidden');
+            document.getElementById('acc2').parentElement.classList.add('hidden');
+            document.getElementById('acc3').parentElement.classList.add('hidden');
+            document.getElementById('accFinal').parentElement.classList.add('hidden');
+
+            // Then, selectively show them based on the status
+            if (currentStatus === 'Sent to Lupon' || currentStatus === 'Summon Issued' || currentStatus.includes('1st') || currentStatus.includes('Mediation')) {
+                // Show 1st Hearing, but keep 2/3 hidden
+                document.getElementById('acc1').parentElement.classList.remove('hidden');
+                toggleAccordion('accIntake'); // Auto-open intake
+            } 
+            else if (currentStatus.includes('2nd')) {
+                document.getElementById('acc1').parentElement.classList.remove('hidden');
+                document.getElementById('acc2').parentElement.classList.remove('hidden');
+                toggleAccordion('acc2'); // Auto-open the current hearing
+            }
+            else if (currentStatus.includes('3rd') || currentStatus.includes('Pangkat')) {
+                document.getElementById('acc1').parentElement.classList.remove('hidden');
+                document.getElementById('acc2').parentElement.classList.remove('hidden');
+                document.getElementById('acc3').parentElement.classList.remove('hidden');
+                toggleAccordion('acc3');
+            }
+            else if (currentStatus === 'Settled' || currentStatus === 'Failed' || currentStatus === 'Resolved') {
+                // Case is closed. Show everything so Admin has full historical context.
+                document.getElementById('acc1').parentElement.classList.remove('hidden');
+                document.getElementById('acc2').parentElement.classList.remove('hidden');
+                document.getElementById('acc3').parentElement.classList.remove('hidden');
+                document.getElementById('accFinal').parentElement.classList.remove('hidden');
+                toggleAccordion('accFinal');
+            } else {
+                // Default fallback (e.g. brand new case)
+                document.getElementById('acc1').parentElement.classList.remove('hidden');
+                toggleAccordion('accIntake');
+            }
+
+            // 4. Show Modal
+            const modalEl = document.getElementById('fileModal');
+            const contentEl = document.getElementById('modalContent');
+            modalEl.classList.remove('hidden');
+            setTimeout(() => { contentEl.classList.remove('scale-95'); contentEl.classList.add('scale-100'); }, 10);
+        }
+
+        function closeFileModal() {
+            const contentEl = document.getElementById('modalContent');
+            contentEl.classList.remove('scale-100');
+            contentEl.classList.add('scale-95');
+            setTimeout(() => { 
+                document.getElementById('fileModal').classList.add('hidden'); 
+                
+                // Reset ALL accordions to closed state for next time
+                ['accIntake', 'acc1', 'acc2', 'acc3', 'accFinal'].forEach(id => {
+                    const content = document.getElementById(id);
+                    const icon = document.getElementById(`icon-${id}`);
+                    if(content && icon) {
+                        content.classList.add('accordion-hidden');
+                        content.classList.remove('accordion-visible');
+                        icon.classList.remove('rotate-180'); // reset arrow direction
+                    }
+                });
+            }, 150);
+        }
+    </script>
+</body>
+</html>

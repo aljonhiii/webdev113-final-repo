@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resident Directory - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style> 
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        tbody tr { transition: all 0.2s ease-in-out; }
+        tbody tr:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025); z-index: 10; position: relative; background-color: #ffffff; border-radius: 8px; }
+
+        .toggle-checkbox:checked { right: 0; border-color: #4f46e5; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #4f46e5; }
+
+        /* Accordion transition for Family list */
+        .family-content { transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out; overflow: hidden; max-height: 0; opacity: 0; }
+        .family-content.open { max-height: 2000px; opacity: 1; }
+
+        /* Modal Tabs */
+        .modal-tab-content { display: none; }
+        .modal-tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Custom Pagination Active State */
+        .page-btn-active { background-color: #4f46e5; color: white; border-color: #4f46e5; }
+    </style>
+</head>
+<body class="text-slate-900 font-sans antialiased overflow-hidden flex h-screen w-full relative">
+
+    <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between hidden md:flex h-full flex-shrink-0 z-[2000] shadow-2xl">
+        <div class="flex-1 overflow-y-auto overflow-x-hidden pb-6 custom-scrollbar">
+            <div class="h-[72px] flex items-center px-6 border-b border-slate-800 sticky top-0 bg-slate-900/90 backdrop-blur-md z-10">
+                <a href="admin_dashboard.html" class="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
+                    <span class="bg-indigo-500 text-white font-black text-xl px-2 py-0.5 rounded-lg tracking-tight shadow-sm">iM</span>
+                    <span class="text-white font-black text-xl tracking-tight">ADMIN</span>
+                </a>
+            </div>
+            <nav class="px-4 pt-6 space-y-8">
+                
+                <div class="space-y-1.5">
+                    <p class="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3">Command Center</p>
+                    <a href="admin_dashboard.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                        Overview Analytics
+                    </a>
+                    <a href="active_reports.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Active Operations
+                    </a>
+                </div>
+
+                <div class="space-y-1.5">
+                    <p class="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3 flex items-center gap-1.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Mediation Module</p>
+                    <a href="admin_luponrecords.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        Lupon Records
+                    </a>
+                </div>
+
+                <div class="space-y-1.5">
+                    <p class="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3 flex items-center gap-1.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg> Citizen Registry</p>
+                    
+                    <a href="admin_residents.html" class="group flex items-center gap-3 px-3 py-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl text-sm font-bold border border-indigo-500/20 shadow-sm transition-all duration-200">
+                        <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        Resident Profiles
+                    </a>
+                </div>
+
+                <div class="space-y-1.5">
+                    <p class="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3">Service Desks</p>
+                    <a href="admin_documents.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Document Approvals
+                        <span id="docBadge" class="ml-auto bg-indigo-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md shadow-sm">0</span>
+                    </a>
+                    <a href="map_incidents.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                        Map & Analytics
+                        <span id="incidentBadge" class="ml-auto bg-orange-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md shadow-sm">0</span>
+                    </a>
+                </div>
+
+                <div class="space-y-1.5">
+                    <p class="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3">System</p>
+                    <a href="admin_manage.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        Account Center
+                    </a>
+                    <a href="admin_staff.html" class="group flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        Staff Directory
+                    </a>
+                </div>
+            </nav>
+        </div>
+
+        <div class="p-4 border-t border-slate-800 bg-slate-900 z-10 shrink-0">
+            <div class="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="h-10 w-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm font-black shadow-inner overflow-hidden border border-indigo-500/30">
+                        <span id="userInitial">A</span>
+                    </div>
+                    <div class="overflow-hidden flex-1">
+                        <p id="" class="text-sm font-black text-white truncate">Administration</p>
+                        <p class="text-[11px] font-bold text-slate-400 truncate mt-0.5">Barangay Secretary</p>
+                    </div>
+                </div>
+                <button onclick="logout()" class="w-full bg-slate-800 border border-slate-700 text-slate-300 py-2 rounded-xl text-xs font-bold hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/30 transition-all duration-200 shadow-sm flex items-center justify-center gap-2 group">
+                    Sign Out
+                    <svg class="w-3.5 h-3.5 opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col h-screen overflow-hidden bg-[#F1F5F9] relative">
+        
+        <header class="h-[72px] bg-white/80 backdrop-blur-md border-b border-slate-200 flex flex-col justify-center flex-shrink-0 z-10">
+            <div class="flex items-center justify-between px-8">
+                <div>
+                    <h1 class="text-xl font-black text-slate-800 tracking-tight">Resident Directory & Profiling</h1>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <div class="relative hidden sm:block">
+                        <svg class="w-4 h-4 absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="Search resident or surname..." class="pl-11 pr-4 py-2 text-sm font-bold bg-slate-100 text-slate-800 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition w-72 outline-none shadow-inner">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto custom-scrollbar">
+            <div class="p-6 md:p-10 max-w-7xl mx-auto flex flex-col min-h-full space-y-6">
+
+                <div class="bg-white border border-slate-200 rounded-3xl shadow-sm flex flex-col overflow-hidden min-h-[600px]">
+                    
+                    <div class="p-8 border-b border-slate-100 flex flex-col md:flex-row md:items-end justify-between bg-slate-50/50 gap-6 shrink-0">
+                        <div>
+                            <h2 class="text-2xl font-black text-slate-900 tracking-tight mb-1">Citizen Profiling & Families</h2>
+                            <p class="text-xs font-medium text-slate-500">Manage account verification, voter status, and review family groupings by Purok.</p>
+                        </div>
+                        <div class="flex gap-3 flex-wrap">
+                            <button onclick="switchMainTab('all')" id="mainTab-all" class="px-5 py-2 text-sm font-black text-white bg-slate-800 border border-slate-800 rounded-xl transition-all shadow-md transform hover:-translate-y-0.5">
+                                All Residents
+                            </button>
+                            <button onclick="switchMainTab('pending')" id="mainTab-pending" class="px-5 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all flex items-center gap-2">
+                                Needs Verification
+                                <span class="bg-orange-500 text-white text-[10px] font-black px-2 py-0.5 rounded-md shadow-sm" id="pendingCount">0</span>
+                            </button>
+                            <button onclick="switchMainTab('families')" id="mainTab-families" class="px-5 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all flex items-center gap-2">
+                                <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                Family Directory
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="tableContainer" class="flex-1 flex flex-col justify-between">
+                        <div class="overflow-x-auto p-4 flex-1">
+                            <table class="w-full text-left border-collapse min-w-[900px]">
+                                <thead>
+                                    <tr class="text-[10px] uppercase tracking-widest text-slate-400 font-bold border-b border-slate-100">
+                                        <th class="px-6 py-4">Citizen Profile</th>
+                                        <th class="px-6 py-4">Contact</th>
+                                        <th class="px-6 py-4">Voter Status</th>
+                                        <th class="px-6 py-4">Social Status</th>
+                                        <th class="px-6 py-4">Account State</th>
+                                        <th class="px-6 py-4 text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="residentTableBody" class="divide-y divide-slate-50 text-sm">
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="px-8 py-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between shrink-0">
+                            <p class="text-xs font-bold text-slate-500" id="paginationInfo">Showing 1 to 10 of 0 entries</p>
+                            <div class="flex gap-1" id="paginationButtons">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="familyDirectoryContainer" class="hidden p-8 bg-slate-50/50 flex-1">
+                        <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-6 shadow-sm">
+                            <p class="text-xs text-indigo-800 font-bold flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span><strong>Demo Concept:</strong> The system automatically groups residents by their <strong>Physical Household (House/Compound)</strong> and then separates them into individual <strong>Family Units (Bloodline/Marriage)</strong>. Search for "Reyes" to see how Two Families exist in One Household.</span>
+                            </p>
+                        </div>
+                        <div id="purokGroupsArea" class="space-y-10">
+                        </div>
+                    </div>
+
+                    <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-slate-400 bg-white border-t border-slate-50">
+                        <svg class="w-12 h-12 text-slate-200 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <p class="font-bold text-sm text-slate-500" id="emptyStateText">No residents found matching criteria.</p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div id="verifyModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[3000] hidden flex items-center justify-center p-4 transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full mx-4 overflow-hidden border border-slate-200 flex flex-col max-h-[90vh] transform transition-all duration-300 scale-95" id="modalScaleWrapper">
+            
+            <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-start bg-slate-50 shrink-0">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center shadow-sm border border-indigo-200 font-black text-xl" id="modalAvatar">A</div>
+                    <div>
+                        <h3 class="text-xl font-black text-slate-900 tracking-tight" id="modalResName">Resident Name</h3>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">ID: <span id="modalResID" class="text-slate-600">#RES-XXXXX</span></p>
+                    </div>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-red-500 hover:bg-red-50 transition p-2 rounded-xl border border-transparent hover:border-red-100">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="flex px-8 border-b border-slate-200 bg-white shrink-0 overflow-x-auto custom-scrollbar">
+                <button class="modal-tab-btn px-4 py-3 text-sm font-black text-indigo-600 border-b-2 border-indigo-600 focus:outline-none transition whitespace-nowrap" onclick="switchModalTab('dossier', this)">Personal Dossier</button>
+                <button class="modal-tab-btn px-4 py-3 text-sm font-bold text-slate-500 border-b-2 border-transparent hover:text-slate-800 focus:outline-none transition whitespace-nowrap" onclick="switchModalTab('household', this)">Household Tree</button>
+                <button class="modal-tab-btn px-4 py-3 text-sm font-bold text-slate-500 border-b-2 border-transparent hover:text-slate-800 focus:outline-none transition whitespace-nowrap" onclick="switchModalTab('records', this)">Official Records</button>
+                <button class="modal-tab-btn px-4 py-3 text-sm font-bold text-slate-500 border-b-2 border-transparent hover:text-slate-800 focus:outline-none transition flex items-center gap-1 whitespace-nowrap" onclick="switchModalTab('history', this)">
+                    Audit History <span class="bg-slate-100 text-slate-500 text-[9px] px-1.5 py-0.5 rounded-full" id="historyCount">0</span>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-8 bg-slate-50/50 custom-scrollbar">
+                
+                <div id="tab-dossier" class="modal-tab-content active space-y-6">
+                    <div>
+                        <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Identity & Demographics</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                            <div>
+                                <p class="text-slate-400 font-bold block text-[10px] uppercase tracking-widest mb-1.5">First Name</p>
+                                <p class="font-black text-slate-800" id="dossierFName">Juan</p>
+                            </div>
+                            <div>
+                                <p class="text-slate-400 font-bold block text-[10px] uppercase tracking-widest mb-1.5">Last Name</p>
+                                <p class="font-black text-slate-800" id="dossierLName">Dela Cruz</p>
+                            </div>
+                            <div class="pt-3 border-t border-slate-50">
+                                <p class="text-slate-400 font-bold block text-[10px] uppercase tracking-widest mb-1.5">Age</p>
+                                <p class="font-bold text-slate-800" id="dossierAge">25</p>
+                            </div>
+                            <div class="pt-3 border-t border-slate-50">
+                                <p class="text-slate-400 font-bold block text-[10px] uppercase tracking-widest mb-1.5">Civil Status (Editable)</p>
+                                <select id="dossierCivilStatus" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm font-bold bg-slate-50 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 shadow-inner w-full transition">
+                                    <option value="Single">Single</option>
+                                    <option value="Married">Married</option>
+                                    <option value="Widowed">Widowed</option>
+                                    <option value="Separated">Separated</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Location & Contact</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                            <div>
+                                <p class="text-slate-400 font-bold block text-[10px] uppercase tracking-widest mb-1.5">Phone Number</p>
+                                <p class="font-bold text-slate-800" id="dossierContact">0912-345-6789</p>
+                            </div>
+                            <div>
+                                <p class="text-slate-400 font-bold block text-[10px] uppercase tracking-widest mb-1.5">Family Role (Editable)</p>
+                                <select id="dossierRole" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm font-bold bg-slate-50 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 shadow-inner w-full transition">
+                                    <option value="Head">Head of Family</option>
+                                    <option value="Spouse">Spouse</option>
+                                    <option value="Child">Child</option>
+                                    <option value="Relative">Relative / Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-span-1 md:col-span-2 pt-3 border-t border-slate-50">
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <p class="text-slate-400 font-bold block text-[10px] uppercase tracking-widest">Registered Address & Zone</p>
+                                    <button onclick="enableTransferMode()" class="text-[9px] bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-1 rounded font-bold uppercase tracking-wider transition border border-slate-200 flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg> Move / Transfer
+                                    </button>
+                                </div>
+                                
+                                <div id="dossierLocationStatic">
+                                    <p class="font-bold text-slate-800" id="dossierAddressDisplay">123 Sun Street, Purok 2</p>
+                                </div>
+                                
+                                <div id="dossierLocationEdit" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 p-4 bg-indigo-50 border border-indigo-100 rounded-xl">
+                                    <div class="col-span-1 sm:col-span-2">
+                                        <p class="text-xs text-indigo-700 font-bold mb-2">Initiating Residency Transfer Protocol</p>
+                                    </div>
+                                    <div>
+                                        <label class="text-[9px] font-bold text-indigo-500 uppercase">Select New Purok</label>
+                                        <select id="dossierPurok" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm font-bold bg-white outline-none focus:border-indigo-500 shadow-sm mt-1">
+                                            <option value="Purok 1">Purok 1</option>
+                                            <option value="Purok 2">Purok 2</option>
+                                            <option value="Purok 3">Purok 3</option>
+                                            <option value="Purok 4">Purok 4</option>
+                                            <option value="Purok 5">Purok 5</option>
+                                            <option value="Purok 6">Purok 6</option>
+                                            <option value="Purok 7">Purok 7</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-[9px] font-bold text-indigo-500 uppercase">New Address Details</label>
+                                        <input type="text" id="dossierAddressInput" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm font-bold bg-white outline-none focus:border-indigo-500 shadow-sm mt-1" placeholder="e.g. Block 4, Lot 12">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-household" class="modal-tab-content">
+                    <div class="bg-indigo-900 rounded-2xl p-6 mb-6 shadow-lg text-white relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
+                        <div class="relative z-10">
+                            <p class="text-[10px] font-bold text-indigo-300 uppercase tracking-widest mb-1">Household Registry Unit</p>
+                            <h2 class="text-xl font-black" id="hhTreeTitle">Address Not Found</h2>
+                            <p class="text-xs text-indigo-200 mt-2">Physical Location ID: <span class="font-mono font-bold text-white" id="hhTreeID">HH-XXXX</span></p>
+                        </div>
+                    </div>
+
+                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Family Units residing in this house:</h4>
+                    <div id="hhTreeList" class="space-y-4">
+                    </div>
+                </div>
+
+                <div id="tab-records" class="modal-tab-content space-y-5">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center bg-white p-6 border border-indigo-100 rounded-2xl shadow-sm gap-4">
+                        <div>
+                            <p class="font-black text-slate-800 text-sm mb-0.5 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                                Account Verification
+                            </p>
+                            <p class="text-xs font-medium text-slate-500 mt-1">Is this person a confirmed resident of the Barangay?</p>
+                        </div>
+                        <select id="mProfileStatus" class="border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-bold bg-slate-50 outline-none cursor-pointer focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 shadow-inner w-full sm:w-auto transition">
+                            <option value="Pending">Pending (Unverified)</option>
+                            <option value="Verified">Verified Resident</option>
+                            <option value="Archived">Archived / Moved</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center bg-white p-6 border border-slate-200 rounded-2xl shadow-sm gap-4">
+                        <div>
+                            <p class="font-black text-slate-800 text-sm mb-0.5">COMELEC Voter Status</p>
+                            <p class="text-xs font-medium text-slate-500 mt-1">Based on presented Voter's ID or Certification.</p>
+                        </div>
+                        <select id="mVoterStatus" class="border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-bold bg-slate-50 outline-none cursor-pointer focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 shadow-inner w-full sm:w-auto transition">
+                            <option value="Unverified">Unverified</option>
+                            <option value="Registered">Registered Voter</option>
+                            <option value="Non-Voter">Non-Voter</option>
+                        </select>
+                    </div>
+
+                    <div class="flex justify-between items-center bg-white p-6 border border-slate-200 rounded-2xl shadow-sm">
+                        <div>
+                            <p class="font-black text-slate-800 text-sm mb-0.5">Indigent Status</p>
+                            <p class="text-xs font-medium text-slate-500 mt-1">Qualifies for Free Documents & Barangay Assistance.</p>
+                        </div>
+                        <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" name="toggle" id="mIndigentToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-transform duration-200 ease-in-out shadow-sm"/>
+                            <label for="mIndigentToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 cursor-pointer shadow-inner"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-history" class="modal-tab-content">
+                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Tamper-Proof Audit Trail</h4>
+                    <div class="relative ml-4 space-y-6 pb-4" id="historyLogList">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="px-8 py-5 border-t border-slate-100 bg-white flex justify-end gap-3 shrink-0 shadow-[0_-4px_20px_rgba(0,0,0,0.02)]">
+                <button onclick="closeModal()" class="bg-white border border-slate-200 text-slate-600 font-bold py-2.5 px-6 rounded-xl hover:bg-slate-50 transition text-sm">
+                    Cancel
+                </button>
+                <button onclick="saveProfiling()" class="bg-indigo-600 text-white font-bold py-2.5 px-8 rounded-xl hover:bg-indigo-700 transition shadow-md hover:-translate-y-0.5 transform text-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    Save System Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../database.js"></script>
+    <script>
+        let mainTab = 'all';
+        let currentlyEditingID = null;
+        
+        let currentPage = 1;
+        let rowsPerPage = 10;
+        let currentFilteredData = []; 
+
+        window.onload = function() {
+            // Clears LocalStorage for a fresh run with the explicit Demo scenarios
+            // Note: Remove localStorage.clear(); when you attach a real backend later.
+     
+
+            document.getElementById('adminName').innerText = "Test Admin";
+            document.getElementById('userInitial').innerText = "T";
+
+            initDatabase();
+            ensureMassiveMockData(); 
+            loadData();
+        };
+
+        // ==========================================
+        // MASSIVE PREDEFINED & RANDOM DATA GENERATOR
+        // ==========================================
+        function ensureMassiveMockData() {
+            let residents = getTable('brgy_residents');
+            
+            if (residents.length === 0) {
+                
+                // 1. ONE HOUSEHOLD, TWO FAMILIES SCENARIO
+                let sharedHouseID = "HH-1001"; 
+                let address = "Block 5, Mango Street";
+                let purok = "Purok 1";
+
+                let fam1_ID = "FAM-501";
+                residents.push({ residentID: "RES-0001", householdID: sharedHouseID, familyID: fam1_ID, firstName: "Pedro", lastName: "Santos", purok: purok, address: address, phone: "0911-111-1111", age: 45, civilStatus: "Married", roleInFamily: "Head", profileStatus: "Verified", voterStatus: "Registered", isIndigent: false, historyLogs: [{ date: new Date().toLocaleString(), action: "Initial Database Migration.", admin: "System" }] });
+                residents.push({ residentID: "RES-0002", householdID: sharedHouseID, familyID: fam1_ID, firstName: "Maria", lastName: "Santos", purok: purok, address: address, phone: "0922-222-2222", age: 43, civilStatus: "Married", roleInFamily: "Spouse", profileStatus: "Verified", voterStatus: "Registered", isIndigent: false, historyLogs: [{ date: new Date().toLocaleString(), action: "Initial Database Migration.", admin: "System" }] });
+
+                let fam2_ID = "FAM-502";
+                residents.push({ residentID: "RES-0003", householdID: sharedHouseID, familyID: fam2_ID, firstName: "Aljon", lastName: "Reyes", purok: purok, address: address, phone: "0933-333-3333", age: 28, civilStatus: "Married", roleInFamily: "Head", profileStatus: "Verified", voterStatus: "Registered", isIndigent: false, historyLogs: [{ date: new Date().toLocaleString(), action: "Initial Database Migration.", admin: "System" }] });
+                residents.push({ residentID: "RES-0004", householdID: sharedHouseID, familyID: fam2_ID, firstName: "Elena", lastName: "Reyes", purok: purok, address: address, phone: "0944-444-4444", age: 27, civilStatus: "Married", roleInFamily: "Spouse", profileStatus: "Verified", voterStatus: "Registered", isIndigent: false, historyLogs: [{ date: new Date().toLocaleString(), action: "Initial Database Migration.", admin: "System" }] });
+
+                // 2. FILLER DATA (Covering all 7 Puroks)
+                const puroks = ["Purok 1", "Purok 2", "Purok 3", "Purok 4", "Purok 5", "Purok 6", "Purok 7"];
+                const families = ["Cruz", "Mendoza", "Garcia", "Bautista", "Aquino", "Torres", "Fernandez", "Gomez", "Dela Cruz"];
+                const firstNames = ['Juan', 'Pedro', 'Ana', 'Jose', 'Luis', 'Rosa', 'Miguel', 'Sofia', 'Carlos', 'Carmen'];
+                
+                for(let h=0; h<30; h++) {
+                    let r_hhID = generateID('HH');
+                    let p = puroks[Math.floor(Math.random()*puroks.length)];
+                    let fillerAddress = `Block ${Math.floor(Math.random()*20) + 1}`;
+                    
+                    let r_famID = generateID('FAM');
+                    let surname = families[Math.floor(Math.random()*families.length)];
+                    let membersCount = Math.floor(Math.random()*4) + 1; 
+                    
+                    for(let m=0; m<membersCount; m++) {
+                        let role = m === 0 ? "Head" : (m === 1 ? "Spouse" : "Child");
+                        let civilStatus = (role === "Head" || role === "Spouse") ? "Married" : "Single";
+                        let age = role === "Child" ? Math.floor(Math.random()*18)+1 : Math.floor(Math.random()*40)+25;
+                        let fname = firstNames[Math.floor(Math.random()*firstNames.length)];
+
+                        residents.push({
+                            residentID: generateID('RES'), householdID: r_hhID, familyID: r_famID,
+                            firstName: fname, lastName: surname, purok: p, address: fillerAddress,
+                            phone: `09${Math.floor(100000000 + Math.random()*900000000)}`, age: age,
+                            civilStatus: civilStatus, roleInFamily: role,
+                            profileStatus: Math.random() > 0.4 ? "Verified" : "Pending",
+                            voterStatus: age > 18 ? (Math.random() > 0.5 ? "Registered" : "Unverified") : "Non-Voter",
+                            isIndigent: Math.random() > 0.8,
+                            historyLogs: [{ date: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toLocaleString(), action: `Initial System Registration. Assigned to ${r_hhID}.`, admin: "System Initialization" }]
+                        });
+                    }
+                }
+                saveTable('brgy_residents', residents);
+            }
+        }
+
+        function switchMainTab(tab) {
+            mainTab = tab;
+            currentPage = 1; 
+            
+            ['all', 'pending', 'families'].forEach(id => {
+                document.getElementById(`mainTab-${id}`).className = "px-5 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all flex items-center gap-2";
+            });
+            document.getElementById(`mainTab-${tab}`).className = "px-5 py-2 text-sm font-black text-white bg-slate-800 border border-slate-800 rounded-xl transition-all shadow-md transform hover:-translate-y-0.5 flex items-center gap-2";
+
+            if(tab === 'families') {
+                document.getElementById('tableContainer').classList.add('hidden');
+                document.getElementById('familyDirectoryContainer').classList.remove('hidden');
+            } else {
+                document.getElementById('tableContainer').classList.remove('hidden');
+                document.getElementById('tableContainer').classList.add('flex');
+                document.getElementById('familyDirectoryContainer').classList.add('hidden');
+            }
+            loadData();
+        }
+
+        function handleSearch() { currentPage = 1; loadData(); }
+        function loadData() { if(mainTab === 'families') renderFamilyDirectory(); else renderResidentsTable(); }
+
+        function renderResidentsTable() {
+            const residents = getTable('brgy_residents');
+            const searchStr = document.getElementById('searchInput').value.toLowerCase();
+            const empty = document.getElementById('emptyState');
+            
+            currentFilteredData = residents.filter(r => {
+                const searchMatch = (r.firstName + ' ' + r.lastName).toLowerCase().includes(searchStr) || r.residentID.toLowerCase().includes(searchStr);
+                const tabMatch = mainTab === 'all' ? true : (r.profileStatus === 'Pending' || r.profileStatus === 'Unverified');
+                return searchMatch && tabMatch;
+            });
+
+            const pendingCount = residents.filter(r => r.profileStatus === 'Pending' || r.profileStatus === 'Unverified').length;
+            document.getElementById('pendingCount').innerText = pendingCount;
+            if (pendingCount === 0) document.getElementById('pendingCount').classList.add('hidden'); else document.getElementById('pendingCount').classList.remove('hidden');
+
+            let totalItems = currentFilteredData.length;
+            let totalPages = Math.ceil(totalItems / rowsPerPage);
+            if (currentPage > totalPages) currentPage = totalPages || 1;
+
+            let startIndex = (currentPage - 1) * rowsPerPage;
+            let endIndex = startIndex + rowsPerPage;
+            let paginatedData = currentFilteredData.slice(startIndex, endIndex);
+
+            const tbody = document.getElementById('residentTableBody');
+            tbody.innerHTML = '';
+            
+            if (totalItems === 0) {
+                empty.classList.replace('hidden', 'flex'); document.getElementById('tableContainer').classList.add('hidden');
+            } else {
+                empty.classList.replace('flex', 'hidden'); document.getElementById('tableContainer').classList.remove('hidden');
+                
+                paginatedData.forEach(r => {
+                    let fullName = `${r.firstName} ${r.lastName}`;
+                    let profileBadge = r.profileStatus === 'Verified' ? `<span class="bg-emerald-50 text-emerald-600 border border-emerald-200 px-2.5 py-0.5 rounded shadow-sm">Verified</span>` : `<span class="bg-orange-50 text-orange-600 border border-orange-200 px-2.5 py-0.5 rounded shadow-sm">${r.profileStatus}</span>`;
+                    let voterBadge = r.voterStatus === 'Registered' ? `<span class="bg-blue-50 text-blue-600 border border-blue-200 px-2.5 py-0.5 rounded shadow-sm">Registered</span>` : r.voterStatus === 'Non-Voter' ? `<span class="bg-slate-100 text-slate-500 border border-slate-200 px-2.5 py-0.5 rounded shadow-sm">Non-Voter</span>` : `<span class="bg-yellow-50 text-yellow-600 border border-yellow-200 px-2.5 py-0.5 rounded shadow-sm">Unverified</span>`;
+                    let indigentBadge = r.isIndigent ? `<span class="bg-indigo-50 text-indigo-600 border border-indigo-200 px-2.5 py-0.5 rounded shadow-sm">Indigent</span>` : `<span class="text-slate-400">-</span>`;
+
+                    const row = document.createElement('tr');
+                    row.className = "hover:bg-slate-50/80 cursor-default";
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center gap-3">
+                                <div class="h-10 w-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm font-black shadow-sm border border-indigo-100">${r.firstName.charAt(0).toUpperCase()}</div>
+                                <div><div class="font-black text-slate-800 text-sm">${fullName}</div><div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">${r.residentID}</div></div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-600">${r.phone || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-[10px] font-black tracking-widest uppercase">${voterBadge}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-[10px] font-black tracking-widest uppercase">${indigentBadge}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-[10px] font-black tracking-widest uppercase">${profileBadge}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right">
+                            <button onclick="openVerifyModal('${r.residentID}')" class="bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-indigo-600 hover:border-indigo-200 px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all transform hover:-translate-y-0.5">Review Profile</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                renderPaginationControls(totalItems, totalPages, startIndex, endIndex);
+            }
+        }
+
+        function renderPaginationControls(totalItems, totalPages, start, end) {
+            document.getElementById('paginationInfo').innerText = `Showing ${totalItems === 0 ? 0 : start + 1} to ${Math.min(end, totalItems)} of ${totalItems} entries`;
+            let btnContainer = document.getElementById('paginationButtons');
+            btnContainer.innerHTML = '';
+
+            let prevDisabled = currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-200 hover:text-slate-800 cursor-pointer';
+            btnContainer.innerHTML += `<button onclick="if(currentPage > 1) { currentPage--; loadData(); }" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-500 bg-white transition ${prevDisabled}">Prev</button>`;
+
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + 4);
+            if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
+
+            for (let i = startPage; i <= endPage; i++) {
+                let activeClass = i === currentPage ? 'page-btn-active shadow-sm' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50';
+                btnContainer.innerHTML += `<button onclick="currentPage = ${i}; loadData();" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition ${activeClass}">${i}</button>`;
+            }
+
+            let nextDisabled = currentPage === totalPages || totalPages === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-200 hover:text-slate-800 cursor-pointer';
+            btnContainer.innerHTML += `<button onclick="if(currentPage < ${totalPages}) { currentPage++; loadData(); }" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-500 bg-white transition ${nextDisabled}">Next</button>`;
+        }
+
+        function renderFamilyDirectory() {
+            const residents = getTable('brgy_residents');
+            const container = document.getElementById('purokGroupsArea');
+            const empty = document.getElementById('emptyState');
+            const searchStr = document.getElementById('searchInput').value.toLowerCase();
+
+            let filteredResidents = residents.filter(r => r.lastName.toLowerCase().includes(searchStr) || r.firstName.toLowerCase().includes(searchStr));
+
+            if(filteredResidents.length === 0) {
+                container.innerHTML = ''; empty.classList.replace('hidden', 'flex'); document.getElementById('emptyStateText').innerText = "No families found matching search."; return;
+            }
+            empty.classList.replace('flex', 'hidden');
+
+            let groupedData = {}; 
+            filteredResidents.forEach(res => {
+                let p = res.purok || "Unassigned Zone";
+                let surname = res.lastName;
+                if(!groupedData[p]) groupedData[p] = {};
+                if(!groupedData[p][surname]) groupedData[p][surname] = [];
+                groupedData[p][surname].push(res);
+            });
+
+            container.innerHTML = '';
+            
+            Object.keys(groupedData).sort().forEach(purokName => {
+                let purokHTML = `
+                    <div class="mb-10">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="h-px bg-slate-300 flex-1"></div>
+                            <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest px-4 py-1.5 bg-slate-100 rounded-lg border border-slate-200">${purokName}</h3>
+                            <div class="h-px bg-slate-300 flex-1"></div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                `;
+
+                Object.keys(groupedData[purokName]).sort().forEach(surname => {
+                    let members = groupedData[purokName][surname];
+                    let famId = `fam_${purokName.replace(/\s+/g, '')}_${surname}`;
+                    
+                    let membersHTML = members.map(m => `
+                        <div class="flex justify-between items-center py-2.5 border-b border-slate-100 last:border-0 hover:bg-slate-100/50 transition px-3 rounded-lg">
+                            <div>
+                                <p class="text-sm font-bold text-slate-800">${m.firstName}</p>
+                                <p class="text-[10px] font-medium text-slate-500 mt-0.5">${m.roleInFamily || 'Member'} • Age: ${m.age || 'N/A'}</p>
+                            </div>
+                            <button onclick="openVerifyModal('${m.residentID}')" class="text-[10px] font-black uppercase text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg border border-indigo-200 transition">Open</button>
+                        </div>
+                    `).join('');
+
+                    purokHTML += `
+                        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+                            <button onclick="toggleFamily('${famId}')" class="w-full px-5 py-4 flex justify-between items-center bg-white hover:bg-slate-50 transition border-b border-transparent focus:outline-none">
+                                <div class="text-left">
+                                    <p class="text-sm font-black text-slate-900 tracking-tight">The ${surname} Family</p>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">${members.length} Registered Members</p>
+                                </div>
+                                <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+                                    <svg id="icon_${famId}" class="w-4 h-4 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </button>
+                            <div id="${famId}" class="family-content bg-slate-50 border-t border-slate-100">
+                                <div class="p-2">${membersHTML}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                purokHTML += `</div></div>`;
+                container.innerHTML += purokHTML;
+            });
+        }
+
+        function toggleFamily(id) {
+            const content = document.getElementById(id);
+            const icon = document.getElementById(`icon_${id}`);
+            if(content.classList.contains('open')) {
+                content.classList.remove('open'); icon.classList.remove('rotate-180');
+            } else {
+                content.classList.add('open'); icon.classList.add('rotate-180');
+            }
+        }
+
+        // ==========================================
+        // 3. 4-TAB DEEP DIVE MODAL LOGIC
+        // ==========================================
+        function switchModalTab(tabId, btnElement) {
+            document.querySelectorAll('.modal-tab-btn').forEach(btn => {
+                btn.className = "modal-tab-btn px-4 py-3 text-sm font-bold text-slate-500 border-b-2 border-transparent hover:text-slate-800 focus:outline-none transition flex items-center gap-1 whitespace-nowrap";
+            });
+            btnElement.className = "modal-tab-btn px-4 py-3 text-sm font-black text-indigo-600 border-b-2 border-indigo-600 focus:outline-none transition flex items-center gap-1 whitespace-nowrap";
+
+            document.querySelectorAll('.modal-tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        }
+
+        function enableTransferMode() {
+            document.getElementById('dossierLocationStatic').classList.add('hidden');
+            document.getElementById('dossierLocationEdit').classList.remove('hidden');
+        }
+
+        function openVerifyModal(resID) {
+            const residents = getTable('brgy_residents');
+            const res = residents.find(r => r.residentID === resID);
+            if(!res) return;
+
+            currentlyEditingID = resID;
+            
+            document.getElementById('modalAvatar').innerText = res.firstName.charAt(0).toUpperCase();
+            document.getElementById('modalResName').innerText = `${res.firstName} ${res.lastName}`;
+            document.getElementById('modalResID').innerText = `#${res.residentID}`;
+            
+            document.getElementById('dossierFName').innerText = res.firstName;
+            document.getElementById('dossierLName').innerText = res.lastName;
+            document.getElementById('dossierAge').innerText = res.age || 'N/A';
+            document.getElementById('dossierContact').innerText = res.phone || 'Not Provided';
+            document.getElementById('dossierCivilStatus').value = res.civilStatus || 'Single';
+            document.getElementById('dossierRole').value = res.roleInFamily || 'Member';
+
+            // SETUP TRANSFER UI
+            document.getElementById('dossierAddressDisplay').innerText = `${res.address || 'Unknown'}, ${res.purok || 'Zone Unassigned'}`;
+            document.getElementById('dossierPurok').value = res.purok || 'Purok 1';
+            document.getElementById('dossierAddressInput').value = res.address || '';
+            document.getElementById('dossierLocationStatic').classList.remove('hidden');
+            document.getElementById('dossierLocationEdit').classList.add('hidden');
+
+            document.getElementById('hhTreeTitle').innerText = (res.address || "Unknown Address") + ", " + (res.purok || "Unknown Zone");
+            document.getElementById('hhTreeID').innerText = res.householdID || "Unassigned";
+            
+            let houseMates = residents.filter(r => r.householdID === res.householdID);
+            let famGroups = {};
+            houseMates.forEach(m => {
+                let fId = m.familyID || 'Unknown Family';
+                if(!famGroups[fId]) famGroups[fId] = [];
+                famGroups[fId].push(m);
+            });
+            
+            let hhHTML = '';
+            Object.keys(famGroups).forEach((famID, index) => {
+                let members = famGroups[famID];
+                let surname = members[0].lastName;
+                
+                let memberRows = members.map(m => {
+                    let isCurrent = m.residentID === currentlyEditingID;
+                    let bg = isCurrent ? "bg-indigo-50 border-indigo-200" : "bg-white border-slate-100 hover:bg-slate-50";
+                    let tag = isCurrent ? `<span class="ml-2 text-[8px] bg-indigo-500 text-white px-1.5 py-0.5 rounded uppercase tracking-widest">Viewing</span>` : '';
+                    return `
+                        <div class="flex justify-between items-center p-3 rounded-xl border ${bg} transition">
+                            <div>
+                                <p class="text-sm font-bold ${isCurrent ? 'text-indigo-900' : 'text-slate-800'}">${m.firstName} ${m.lastName} ${tag}</p>
+                                <p class="text-[10px] font-medium text-slate-500 mt-0.5">${m.roleInFamily || 'Member'} • Age: ${m.age}</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                hhHTML += `
+                    <div class="mb-4">
+                        <p class="text-xs font-black text-slate-800 uppercase tracking-widest mb-2 bg-slate-100 px-3 py-1.5 rounded inline-block">Family Unit ${index+1}: The ${surname}s</p>
+                        <div class="space-y-2 border-l-2 border-slate-200 pl-4 ml-2">
+                            ${memberRows}
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('hhTreeList').innerHTML = hhHTML;
+
+            document.getElementById('mProfileStatus').value = res.profileStatus || 'Pending';
+            document.getElementById('mVoterStatus').value = res.voterStatus || 'Unverified';
+            document.getElementById('mIndigentToggle').checked = res.isIndigent === true;
+
+            let logs = res.historyLogs || [];
+            document.getElementById('historyCount').innerText = logs.length;
+            
+            if(logs.length === 0) {
+                document.getElementById('historyLogList').innerHTML = `<p class="text-sm text-slate-400 italic">No history recorded for this resident.</p>`;
+            } else {
+                document.getElementById('historyLogList').innerHTML = `
+                    <div class="absolute left-[5px] top-3 bottom-0 w-0.5 bg-slate-200"></div>
+                    ` + logs.map((log, i) => `
+                    <div class="relative flex gap-4">
+                        <div class="w-3 h-3 bg-indigo-500 rounded-full border-[3px] border-white shadow-sm mt-1.5 relative z-10 shrink-0"></div>
+                        <div class="flex-1 pb-6 ${i === logs.length-1 ? '' : 'border-b border-slate-100'}">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${log.date} • ${log.admin}</p>
+                            <p class="text-sm font-medium text-slate-800 mt-1.5 leading-relaxed bg-white p-3 rounded-xl border border-slate-200 shadow-sm">${log.action}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            switchModalTab('dossier', document.querySelector('.modal-tab-btn'));
+            const modalEl = document.getElementById('verifyModal');
+            const contentWrapper = document.getElementById('modalScaleWrapper');
+            modalEl.classList.remove('hidden');
+            setTimeout(() => { contentWrapper.classList.remove('scale-95'); contentWrapper.classList.add('scale-100'); }, 10);
+        }
+
+        function closeModal() {
+            const contentWrapper = document.getElementById('modalScaleWrapper');
+            contentWrapper.classList.remove('scale-100');
+            contentWrapper.classList.add('scale-95');
+            setTimeout(() => { document.getElementById('verifyModal').classList.add('hidden'); currentlyEditingID = null; }, 150);
+        }
+
+        function saveProfiling() {
+            if(!currentlyEditingID) return;
+            const residents = getTable('brgy_residents');
+            const resIndex = residents.findIndex(r => r.residentID === currentlyEditingID);
+            
+            if(resIndex !== -1) {
+                let res = residents[resIndex];
+                let changes = [];
+                const adminName = "Test Admin"; 
+
+                // 1. Civil Status Change (E.g. getting married)
+                let nCiv = document.getElementById('dossierCivilStatus').value;
+                if(res.civilStatus !== nCiv) { changes.push(`Civil Status updated: ${res.civilStatus||'N/A'} ➔ ${nCiv}`); res.civilStatus = nCiv; }
+                
+                let nRole = document.getElementById('dossierRole').value;
+                if(res.roleInFamily !== nRole) { changes.push(`Family Role updated: ${res.roleInFamily||'N/A'} ➔ ${nRole}`); res.roleInFamily = nRole; }
+
+                // 2. TRANSFER LOGIC
+                let isTransferring = !document.getElementById('dossierLocationEdit').classList.contains('hidden');
+                if (isTransferring) {
+                    let nPurok = document.getElementById('dossierPurok').value;
+                    let nAddr = document.getElementById('dossierAddressInput').value;
+
+                    if (res.purok !== nPurok || res.address !== nAddr) {
+                        changes.push(`🏠 TRANSFERRED RESIDENCY: Moved from [${res.purok} - ${res.address}] ➔ [${nPurok} - ${nAddr}]. System automatically detached resident from old Household Unit and assigned a new independent Household ID.`);
+                        res.purok = nPurok;
+                        res.address = nAddr;
+                        // Key Logic: Sever old ties and create a new household/family unit.
+                        res.householdID = generateID('HH');
+                        res.familyID = generateID('FAM'); 
+                    }
+                }
+
+                // 3. Admin Profiling Updates
+                let nProf = document.getElementById('mProfileStatus').value;
+                if(res.profileStatus !== nProf) { changes.push(`Account Verification: ${res.profileStatus||'N/A'} ➔ ${nProf}`); res.profileStatus = nProf; }
+
+                let nVot = document.getElementById('mVoterStatus').value;
+                if(res.voterStatus !== nVot) { changes.push(`Voter Status: ${res.voterStatus||'N/A'} ➔ ${nVot}`); res.voterStatus = nVot; }
+
+                let nInd = document.getElementById('mIndigentToggle').checked;
+                if(res.isIndigent !== nInd) { changes.push(`Indigent Tagging: ${res.isIndigent?'Yes':'No'} ➔ ${nInd?'Yes':'No'}`); res.isIndigent = nInd; }
+
+                // 4. Commit Audit Logs
+                if(changes.length > 0) {
+                    if(!res.historyLogs) res.historyLogs = [];
+                    res.historyLogs.unshift({
+                        date: new Date().toLocaleString(),
+                        action: changes.join(' <br> '), // Break lines for readability in the UI
+                        admin: adminName
+                    });
+                }
+
+                saveTable('brgy_residents', residents);
+                alert("Resident Profile and Transfers officially recorded!");
+                closeModal();
+                loadData(); 
+            }
+        }
+
+        function logout() { window.location.href = '../login/login.html'; }
+    </script>
+</body>
+</html>
