@@ -227,7 +227,8 @@ body {
 
 .content-card { background-color: #fff; padding: 1.5rem; border-radius: 1rem; border: 1px solid #f3f4f6; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
 .section-heading { font-size: 0.625rem; font-weight: 700; color: var(--slate-400); text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 1rem; }
-.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+.grid-2 { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+@media (min-width: 768px) { .grid-2 { grid-template-columns: repeat(2, 1fr); } }
 .party-label { font-size: 0.6875rem; font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase; margin: 0 0 0.25rem; }
 .label-blue { color: #2563EB; }
 .label-red { color: #DC2626; }

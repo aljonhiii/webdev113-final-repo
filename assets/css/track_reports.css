@@ -235,7 +235,8 @@ body {
 .modal-content-area { padding: 2rem; }
 @media (min-width: 1024px) { .modal-content-area { grid-column: span 2; } }
 
-.grid-2-cols { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+.grid-2-cols { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+@media (min-width: 768px) { .grid-2-cols { grid-template-columns: repeat(2, 1fr); } }
 .info-box { background-color: #fff; padding: 1.25rem; border-radius: 1rem; border: 1px solid var(--border-color); box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); }
 .info-label { font-size: 0.625rem; font-weight: 700; color: var(--slate-400); text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 0.25rem; }
 .info-value { font-weight: 700; color: var(--slate-900); font-size: 0.875rem; }
