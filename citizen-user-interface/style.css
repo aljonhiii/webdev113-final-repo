@@ -1,0 +1,409 @@
+/* =========================================================
+   BARANGAY CONNECT - GLOBAL STYLESHEET
+   ========================================================= */
+
+/* --- GLOBAL VARIABLES & RESET --- */
+:root {
+    /* Backgrounds */
+    --bg-main: #f9fafb;
+    --bg-card: #ffffff;
+    
+    /* Typography Colors */
+    --text-main: #111827;
+    --text-muted: #6b7280;
+    --text-light: #9ca3af;
+    
+    /* UI Colors */
+    --border-color: #e5e7eb;
+    --black: #000000;
+    --white: #ffffff;
+    
+    /* Status & Category Colors */
+    --red-bg: #fef2f2;
+    --red-text: #dc2626;
+    
+    --blue-bg: #eff6ff;
+    --blue-border: #dbeafe;
+    --blue-text: #1e40af;
+    
+    --orange-bg: #fff7ed;
+    --orange-border: #ffedd5;
+    --orange-text: #9a3412;
+    
+    --green-bg: #ecfdf5;
+    --green-text: #059669;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+}
+
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+a { 
+    text-decoration: none; 
+    color: inherit; 
+}
+
+button, select, input, textarea { 
+    font-family: inherit; 
+}
+
+/* --- UTILITIES --- */
+.container { 
+    max-width: 80rem; 
+    margin: 0 auto; 
+    padding: 0 1.5rem; 
+    width: 100%; 
+}
+
+.hidden { 
+    display: none !important; 
+}
+
+.text-optional { 
+    color: var(--text-light); 
+    font-weight: 400; 
+    font-size: 0.85rem; 
+}
+
+.text-required { 
+    color: var(--red-text); 
+}
+
+/* --- HEADER & NAVIGATION --- */
+header { 
+    background: var(--bg-card); 
+    box-shadow: var(--shadow-sm); 
+    position: sticky; 
+    top: 0; 
+    z-index: 50; 
+}
+
+.header-content { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 1rem 0; 
+}
+
+.logo { 
+    display: inline-flex; 
+    align-items: center; 
+    gap: 0.375rem; 
+    transition: opacity 0.2s; 
+}
+
+.logo:hover { 
+    opacity: 0.8; 
+}
+
+.logo-im { 
+    background: var(--black); 
+    color: var(--white); 
+    font-weight: 800; 
+    font-size: 1.5rem; 
+    padding: 0.125rem 0.5rem; 
+    border-radius: 0.375rem; 
+    letter-spacing: -0.05em; 
+}
+
+.logo-issue { 
+    color: var(--text-muted); 
+    font-weight: 800; 
+    font-size: 1.5rem; 
+    letter-spacing: -0.05em; 
+}
+
+.nav-links { 
+    display: none; 
+    gap: 1.5rem; 
+    font-weight: 500; 
+    font-size: 0.875rem; 
+    color: var(--text-muted); 
+}
+
+@media (min-width: 768px) { 
+    .nav-links { display: flex; } 
+}
+
+.nav-links a { 
+    transition: color 0.2s; 
+}
+
+.nav-links a:hover, 
+.nav-links a.active { 
+    color: var(--black); 
+    font-weight: 700; 
+}
+
+.user-actions { 
+    display: flex; 
+    align-items: center; 
+    gap: 1rem; 
+}
+
+.welcome-msg { 
+    font-size: 0.875rem; 
+    font-weight: 600; 
+    color: #374151; 
+}
+
+/* --- MAIN LAYOUT & CARDS --- */
+main { 
+    flex-grow: 1; 
+    padding: 2.5rem 0; 
+}
+
+.welcome-banner { 
+    background: var(--black); 
+    color: var(--white); 
+    border-radius: 1rem; 
+    padding: 2rem; 
+    margin-bottom: 2.5rem; 
+    box-shadow: var(--shadow-lg); 
+}
+
+.welcome-banner h1 { 
+    font-size: 1.875rem; 
+    font-weight: 800; 
+    margin-bottom: 0.5rem; 
+}
+
+.welcome-banner p { 
+    color: #d1d5db; 
+}
+
+.card { 
+    background: var(--bg-card); 
+    border: 1px solid var(--border-color); 
+    border-radius: 1rem; 
+    box-shadow: var(--shadow-sm); 
+    padding: 2rem; 
+    margin-bottom: 2rem;
+}
+
+.card-header { 
+    font-size: 1.5rem; 
+    font-weight: 700; 
+    margin-bottom: 1.5rem; 
+    border-bottom: 1px solid var(--border-color); 
+    padding-bottom: 1rem; 
+}
+
+/* --- FORMS & INPUTS --- */
+.form-group { 
+    margin-bottom: 1.5rem; 
+}
+
+.form-label { 
+    display: block; 
+    font-size: 0.875rem; 
+    font-weight: 600; 
+    color: #374151; 
+    margin-bottom: 0.5rem; 
+}
+
+.form-control { 
+    width: 100%; 
+    background: var(--bg-main); 
+    border: 1px solid var(--border-color); 
+    border-radius: 0.5rem; 
+    padding: 0.75rem 1rem; 
+    font-size: 0.875rem; 
+    outline: none; 
+    transition: all 0.2s; 
+}
+
+.form-control:focus { 
+    background: var(--bg-card); 
+    border-color: var(--black); 
+    box-shadow: 0 0 0 1px var(--black); 
+}
+
+.grid-2 { 
+    display: grid; 
+    gap: 1.5rem; 
+}
+
+@media (min-width: 768px) { 
+    .grid-2 { grid-template-columns: 1fr 1fr; } 
+}
+
+/* --- DYNAMIC FORM SECTIONS (Citizen Dashboard) --- */
+.dynamic-section { 
+    padding: 1.5rem; 
+    border-radius: 0.75rem; 
+    margin-bottom: 1.5rem; 
+}
+
+.normal-fields { 
+    background: rgba(239, 246, 255, 0.5); 
+    border: 1px solid var(--blue-border); 
+}
+
+.normal-fields h3 { 
+    color: var(--blue-text); 
+    font-weight: 700; 
+    margin-bottom: 1rem; 
+}
+
+.dispute-fields { 
+    background: rgba(255, 247, 237, 0.5); 
+    border: 1px solid var(--orange-border); 
+}
+
+.dispute-fields h3 { 
+    color: var(--orange-text); 
+    font-weight: 700; 
+    margin-bottom: 1rem; 
+}
+
+/* --- BUTTONS --- */
+.btn-submit { 
+    width: 100%; 
+    background: var(--black); 
+    color: var(--white); 
+    font-weight: 700; 
+    font-size: 1rem; 
+    padding: 1rem 1.5rem; 
+    border: none; 
+    border-radius: 0.5rem; 
+    cursor: pointer; 
+    transition: all 0.2s; 
+    box-shadow: var(--shadow-md); 
+    margin-top: 1rem; 
+}
+
+.btn-submit:hover { 
+    background: #1f2937; 
+    transform: translateY(-2px); 
+}
+
+.btn-logout { 
+    background: var(--red-bg); 
+    color: var(--red-text); 
+    font-size: 0.875rem; 
+    font-weight: 700; 
+    padding: 0.5rem 1rem; 
+    border-radius: 0.5rem; 
+    border: none; 
+    cursor: pointer; 
+    transition: background 0.2s; 
+}
+
+.btn-logout:hover { 
+    background: #fee2e2; 
+}
+
+/* --- TABLES & BADGES (Admin Dashboard) --- */
+.table-container { 
+    width: 100%; 
+    overflow-x: auto; 
+    margin-top: 1rem; 
+}
+
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    text-align: left; 
+}
+
+th { 
+    background-color: var(--bg-main); 
+    padding: 1rem; 
+    font-size: 0.75rem; 
+    text-transform: uppercase; 
+    letter-spacing: 0.05em; 
+    color: var(--text-muted); 
+    border-bottom: 2px solid var(--border-color); 
+}
+
+td { 
+    padding: 1rem; 
+    font-size: 0.875rem; 
+    border-bottom: 1px solid var(--border-color); 
+    vertical-align: middle; 
+}
+
+tbody tr:hover { 
+    background-color: rgba(249, 250, 251, 0.5); 
+}
+
+.badge { 
+    display: inline-flex; 
+    align-items: center; 
+    padding: 0.25rem 0.75rem; 
+    border-radius: 9999px; 
+    font-size: 0.75rem; 
+    font-weight: 600; 
+}
+
+.badge-pending { 
+    background-color: #fef3c7; 
+    color: #b45309; 
+}
+
+.badge-normal { 
+    background-color: var(--blue-bg); 
+    color: var(--blue-text); 
+    border: 1px solid var(--blue-border); 
+}
+
+.badge-dispute { 
+    background-color: var(--orange-bg); 
+    color: var(--orange-text); 
+    border: 1px solid var(--orange-border); 
+}
+
+.btn-action { 
+    padding: 0.5rem 1rem; 
+    border-radius: 0.5rem; 
+    font-size: 0.75rem; 
+    font-weight: 700; 
+    cursor: pointer; 
+    border: none; 
+    transition: all 0.2s; 
+    box-shadow: var(--shadow-sm); 
+}
+
+.btn-approve { 
+    background-color: #10b981; 
+    color: white; 
+}
+
+.btn-approve:hover { 
+    background-color: #059669; 
+    transform: translateY(-1px); 
+}
+
+.btn-forward { 
+    background-color: var(--orange-text); 
+    color: white; 
+}
+
+.btn-forward:hover { 
+    background-color: #7c2d12; 
+    transform: translateY(-1px); 
+}
+
+.text-empty { 
+    text-align: center; 
+    padding: 3rem; 
+    color: var(--text-muted); 
+    font-style: italic; 
+}
