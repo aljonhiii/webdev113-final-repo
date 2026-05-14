@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Documents - Barangay Connect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/request_documents.css">
+</head>
+<body>
+
+    <aside class="sidebar">
+        
+        <div class="sidebar-scroll">
+            
+            <div class="sidebar-header">
+                <a href="../index.html" class="brand-link">
+                    <span class="brand-icon-dark">iM</span>
+                    <span class="brand-text">ISSUE</span>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                
+                <div class="nav-section">
+                    <p class="nav-section-title">Public Reports</p>
+                    
+                    <a href="citezen_dashboard.html" class="nav-link">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        File a Report
+                    </a>
+                    
+                    <p class="nav-section-title">Track Reports</p>
+                    <a href="track_reports.html" class="nav-link">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                        Track Submissions
+                    </a>
+                    
+                    <p class="nav-section-title">Community Reports</p>
+                    <a href="community_feed.html" class="nav-link">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                        Community Feed
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <p class="nav-section-title text-amber">
+                        <svg class="nav-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        Confidential
+                    </p>
+                    
+                    <a href="my_disputes.html" class="nav-link-amber">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path></svg>
+                        My Mediation Cases
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <p class="nav-section-title">E-Services</p>
+                    
+                    <a href="request_documents.html" class="nav-link active">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Document Requests
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <p class="nav-section-title">Preferences</p>
+                    
+                    <a href="account_settings.html" class="nav-link">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        Profile Settings
+                        <span id="sidebarCompletionBadge" class="badge-completion hidden"></span>
+                    </a>
+                </div>
+
+            </nav>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-info">
+                    <div class="user-avatar" id="miniProfilePicContainer">
+                        <span id="userInitial">C</span>
+                    </div>
+                    <div class="user-details">
+                        <p id="profileName" class="user-name">Loading...</p>
+                        <p id="profileID" class="user-role">Registered Citizen</p>
+                    </div>
+                </div>
+                <button onclick="logout()" class="sign-out-btn">
+                    Sign Out
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        
+        <header class="app-header glass-header">
+            <div>
+                <h1 class="header-title">Barangay Hall Services</h1>
+            </div>
+        </header>
+
+        <main class="content-area">
+            <div class="content-container">
+                
+                <div class="page-header border-bottom">
+                    <h2 class="page-title">Request Documents</h2>
+                    <p class="page-subtitle max-w-2xl">
+                        Apply for clearances, certificates, and official barangay IDs online. 
+                        Your profile data will automatically pre-fill compatible fields to save you time.
+                    </p>
+                </div>
+
+                <div class="tabs-wrapper border-bottom mb-8">
+                    <button onclick="switchTab('request')" id="tab-request" class="tab-btn-doc active">New Request</button>
+                    <button onclick="switchTab('history')" id="tab-history" class="tab-btn-doc">Tracking & History</button>
+                </div>
+
+                <div id="view-request">
+                    <div class="form-card">
+                        <div class="form-section">
+                            <label class="form-label-uppercase">Select Document Type</label>
+                            <select id="docType" class="form-select-lg">
+                                <option value="" selected disabled>Choose a document...</option>
+                                <option value="Barangay Clearance">Barangay Clearance</option>
+                                <option value="Certificate of Residency">Certificate of Residency</option>
+                                <option value="Certificate of Indigency">Certificate of Indigency</option>
+                                <option value="Cedula">Community Tax Certificate (Cedula)</option>
+                                <option value="Business Clearance">Business Clearance</option>
+                                <option value="Barangay ID">Barangay ID</option>
+                                <option value="Burial Assistance">Burial Assistance</option>
+                            </select>
+                        </div>
+
+                        <div id="documentRequestForm" class="hidden">
+                            
+                            <div class="progress-wrapper">
+                                <div class="progress-bar-container">
+                                    <div id="progressBar" style="width: 33%" class="progress-bar-fill"></div>
+                                </div>
+                                <div class="progress-labels">
+                                    <span class="progress-step-text" id="stepIndicatorText">Step 1 of 3</span>
+                                    <span class="progress-percentage" id="stepPercentage">33%</span>
+                                </div>
+                            </div>
+
+                            <div class="dynamic-form-box">
+                                <div id="dynamicFieldsContainer" class="dynamic-grid">
+                                    </div>
+                            </div>
+
+                            <div id="feeDisplayBox" class="hidden fee-box flex-between">
+                                <div>
+                                    <p class="fee-label">Required Fee</p>
+                                    <p class="fee-desc">To be paid upon claiming or via online payment.</p>
+                                </div>
+                                <div class="fee-amount" id="feeAmountText">₱0.00</div>
+                            </div>
+
+                            <div class="form-footer flex-between border-top pt-6">
+                                <button type="button" id="prevBtn" onclick="changeStep(-1)" class="hidden btn-back">Back</button>
+                                <div class="spacer"></div>
+                                <button type="button" id="nextBtn" onclick="changeStep(1)" class="btn-next">Next Step <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
+                                <button type="button" id="submitBtn" onclick="submitFinalForm()" class="hidden btn-submit-req">Submit Request</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-history" class="hidden space-y-6">
+                    <div id="emptyState" class="hidden empty-state-box">
+                        <div class="empty-icon-wrapper">
+                            <svg class="icon-lg text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                        <h3 class="empty-title">No Document Requests</h3>
+                        <p class="empty-desc">You haven't requested any documents yet. Switch to the 'New Request' tab to apply.</p>
+                    </div>
+
+                    <div id="trackingContainer" class="history-grid">
+                        </div>
+                </div>
+
+                <footer class="app-footer">
+                    <div class="footer-left">
+                        <div class="footer-brand">
+                            <span class="footer-brand-icon">iM</span>
+                            <span class="footer-brand-text">ISSUE</span>
+                        </div>
+                        <p class="footer-copy">&copy; 2026 Barangay Connect.</p>
+                    </div>
+                </footer>
+            </div>
+        </main>
+    </div>
+
+    <div id="paymentModal" class="modal-overlay hidden">
+        <div class="modal-container modal-sm scale-95" id="paymentContent">
+            
+            <div id="paymentSelectionView">
+                <div class="modal-header-simple">
+                    <div>
+                        <h3 class="modal-title">Select Payment</h3>
+                        <p class="modal-subtitle">Amount due: <span id="selectAmountText" class="text-blue">₱0.00</span></p>
+                    </div>
+                    <button onclick="closePaymentModal()" class="btn-close-simple">
+                        <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <div class="modal-body-simple">
+                    <button onclick="selectPayment('GCash')" class="payment-method-btn btn-gcash group">
+                        <div class="payment-method-info">
+                            <div class="payment-icon-box icon-gcash group-hover-scale">
+                                <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                            </div>
+                            <span class="payment-method-name">GCash</span>
+                        </div>
+                        <svg class="icon-sm payment-chevron chevron-gcash" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+
+                    <button onclick="selectPayment('Maya')" class="payment-method-btn btn-maya group">
+                        <div class="payment-method-info">
+                            <div class="payment-icon-box icon-maya group-hover-scale">
+                                <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            </div>
+                            <span class="payment-method-name">Maya</span>
+                        </div>
+                        <svg class="icon-sm payment-chevron chevron-maya" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+
+                    <div class="divider-text">
+                        <div class="divider-line"></div>
+                        <span class="divider-label">OR</span>
+                        <div class="divider-line"></div>
+                    </div>
+
+                    <button onclick="selectPayment('Cash at Hall')" class="payment-method-btn btn-cash group">
+                        <div class="payment-method-info">
+                            <div class="payment-icon-box icon-cash group-hover-scale">
+                                <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            </div>
+                            <span class="payment-method-name">Pay Cash at Hall</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <div id="paymentProcessingView" class="hidden">
+                <div id="paymentHeaderColor" class="payment-header-process">
+                    <button onclick="backToMethods()" class="btn-back-process">
+                        <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <p class="process-header-label">Paying with</p>
+                    <h2 class="process-header-title" id="activePaymentTitle">GCash</h2>
+                </div>
+                
+                <div class="process-body">
+                    <p class="process-amount-label">Total Amount</p>
+                    <p class="process-amount-value" id="processAmountText">₱0.00</p>
+
+                    <div class="pin-container">
+                        <label class="pin-label">Enter 4-Digit Security PIN</label>
+                        <div class="pin-input-wrapper">
+                            <input type="password" id="paymentPin" maxlength="4" class="pin-input" placeholder="••••">
+                        </div>
+                        <p class="pin-hint">This is a Proof-of-Concept demo.</p>
+                    </div>
+
+                    <button id="processPayBtn" onclick="executeDigitalPayment()" class="btn-authorize-pay">
+                        AUTHORIZE PAYMENT
+                    </button>
+                    <p id="processMerchantText" class="merchant-text">Secure Payment Gateway</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="../database.js"></script>
+    <script src="../assets/js/request_documents.js"></script>
+
+
+</body>
+</html>
