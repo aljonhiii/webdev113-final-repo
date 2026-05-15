@@ -1,0 +1,79 @@
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+
+body{display:flex;height:100vh;background:#f8fafc;color:#111827;}
+
+.sidebar{width:260px;background:#fff;border-right:1px solid #e5e7eb;display:flex;flex-direction:column;justify-content:space-between;}
+
+.sidebar-header{height:72px;display:flex;align-items:center;padding:0 20px;border-bottom:1px solid #f1f5f9;gap:6px;}
+
+.logo-box{background:#d97706;color:#fff;font-weight:800;padding:3px 8px;border-radius:6px;}
+.logo-text{font-weight:800;font-size:18px;}
+
+.menu{padding:15px;}
+.menu-label{font-size:10px;color:#9ca3af;margin-bottom:10px;letter-spacing:.1em;}
+
+.menu-item{display:block;padding:10px;border-radius:10px;color:#6b7280;margin-bottom:5px;}
+.menu-item:hover{background:#f9fafb;color:#111827;}
+.menu-item.active{background:#fef3c7;color:#b45309;border:1px solid #fde68a;font-weight:600;}
+
+.sidebar-footer{padding:15px;border-top:1px solid #f1f5f9;}
+
+.user{display:flex;gap:10px;margin-bottom:10px;}
+.avatar{width:36px;height:36px;background:#f59e0b;color:#fff;display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:700;}
+.user-name{font-size:14px;font-weight:700;}
+.user-role{font-size:12px;color:#9ca3af;}
+
+.logout{width:100%;padding:6px;border-radius:8px;border:1px solid #e5e7eb;background:#f9fafb;cursor:pointer;}
+.logout:hover{background:#fee2e2;color:#dc2626;}
+
+.main{flex:1;display:flex;flex-direction:column;}
+
+.topbar{height:72px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;padding:0 32px;}
+.topbar h1{font-size:18px;font-weight:700;}
+
+.archive-badge{display:flex;align-items:center;gap:5px;background:#fef3c7;color:#b45309;padding:6px 12px;border-radius:8px;border:1px solid #fde68a;font-size:12px;font-weight:600;}
+
+.container{padding:32px;max-width:1100px;margin:auto;width:100%;}
+
+.page-header h2{font-size:24px;font-weight:800;}
+.page-header p{color:#6b7280;margin-top:5px;font-size:14px;}
+
+.card{margin-top:20px;background:#fff;border-radius:16px;border:1px solid #e5e7eb;overflow:hidden;}
+.card-top{padding:20px;background:#f9fafb;border-bottom:1px solid #e5e7eb;}
+
+.table-wrap{overflow-x:auto;padding:10px;}
+
+table{width:100%;border-collapse:collapse;min-width:900px;}
+th{font-size:10px;text-transform:uppercase;color:#9ca3af;padding:16px;text-align:left;}
+td{padding:16px;font-size:14px;border-bottom:1px solid #f1f5f9;}
+tr:hover{background:#f9fafb;}
+
+.right{text-align:right;}
+
+.status{font-size:10px;padding:4px 8px;border-radius:6px;font-weight:700;}
+.green{background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;}
+.red{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;}
+
+.view-btn{padding:6px 12px;border-radius:8px;border:1px solid #e5e7eb;background:#fff;font-size:12px;cursor:pointer;}
+.view-btn:hover{background:#f3f4f6;}
+
+/* MODAL */
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;}
+.hidden{display:none;}
+
+.modal-box{background:#fff;width:900px;max-height:90vh;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transform:scale(.95);transition:.2s;}
+.modal.show .modal-box{transform:scale(1);}
+
+.modal-header{display:flex;justify-content:space-between;padding:15px;background:#f9fafb;border-bottom:1px solid #eee;}
+.modal-content{padding:20px;overflow:auto;}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.box{background:#f9fafb;padding:10px;border-radius:10px;border:1px solid #eee;}
+.hearing{background:#f9fafb;padding:10px;border-radius:10px;border:1px solid #eee;margin-bottom:10px;}
+.final-box{background:#ecfdf5;padding:15px;border-radius:10px;border:1px solid #a7f3d0;font-weight:600;}
+
+.modal-footer{display:flex;justify-content:flex-end;gap:10px;padding:15px;background:#f9fafb;}
+.print-btn{border:1px solid #ddd;padding:6px 12px;border-radius:8px;background:#fff;}
+.close-main{background:#111827;color:#fff;padding:6px 16px;border-radius:8px;border:none;}
+
+.status-badge{padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;}

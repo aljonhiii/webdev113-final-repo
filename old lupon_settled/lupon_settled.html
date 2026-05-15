@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settled Records</title>
+
+<link rel="stylesheet" href="lupon_settled.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div>
+        <div class="sidebar-header">
+            <span class="logo-box">iM</span>
+            <span class="logo-text">LUPON</span>
+        </div>
+
+        <div class="menu">
+            <p class="menu-label">MEDIATION MODULE</p>
+            <a class="menu-item">Active Cases</a>
+            <a class="menu-item active">Settled Records</a>
+        </div>
+    </div>
+
+    <div class="sidebar-footer">
+        <div class="user">
+            <div class="avatar">L</div>
+            <div>
+                <p class="user-name">Lupon Officer</p>
+                <p class="user-role">Mediator Dashboard</p>
+            </div>
+        </div>
+
+        <button class="logout" onclick="logout()">Sign Out</button>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+<header class="topbar">
+    <h1>Lupon Tagapamayapa Dashboard</h1>
+
+    <div class="archive-badge">
+        <svg width="14" height="14" fill="none" stroke="currentColor">
+            <path d="M12 15v2M6 19h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+        </svg>
+        Archive Mode
+    </div>
+</header>
+
+<main class="container">
+
+<div class="page-header">
+    <h2>Settled & Closed Records</h2>
+    <p>Review historical data of successfully settled disputes and cases that failed mediation.</p>
+</div>
+
+<div class="card">
+
+<div class="card-top">
+    <h3>Archive Ledger</h3>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Reference ID</th>
+<th>Complainant</th>
+<th>Respondent</th>
+<th>Nature of Dispute</th>
+<th>Final Outcome</th>
+<th class="right">Action</th>
+</tr>
+</thead>
+
+<tbody id="archiveTableBody"></tbody>
+</table>
+</div>
+
+</div>
+
+</main>
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="modal hidden">
+<div class="modal-box" id="modalBox">
+
+<div class="modal-header">
+    <div class="modal-title">
+        <h3>Official Case Record</h3>
+        <span id="modalId" class="ref"></span>
+    </div>
+
+    <div class="modal-actions">
+        <span id="modalStatus" class="status-badge"></span>
+
+        <button onclick="closeModal()" class="close-btn">
+            ✕
+        </button>
+    </div>
+</div>
+
+<div class="modal-content">
+
+<div class="section">
+<h4>1. Initial Complaint Filing</h4>
+
+<div class="grid">
+<div class="box">
+<p class="label">Complainant</p>
+<p id="mComplainant"></p>
+</div>
+
+<div class="box">
+<p class="label">Respondent</p>
+<p id="mRespondent"></p>
+</div>
+</div>
+
+<div class="box full">
+<p class="label">Statement of the Problem</p>
+<p id="mDesc"></p>
+</div>
+</div>
+
+<div class="section">
+<h4>2. Mediation Hearing</h4>
+
+<div class="hearing">
+<p class="label">Discussion</p>
+<p id="mNotes"></p>
+</div>
+
+<div class="hearing">
+<p class="label">Witness</p>
+<p id="mWitness"></p>
+</div>
+
+<div class="hearing">
+<p class="label">Decision</p>
+<p id="mDecision"></p>
+</div>
+</div>
+
+<div class="section">
+<h4>3. Final Resolution</h4>
+
+<div class="final-box">
+<p id="mFinal"></p>
+</div>
+</div>
+
+</div>
+
+<div class="modal-footer">
+<button onclick="window.print()" class="print-btn">Print</button>
+<button onclick="closeModal()" class="close-main">Close</button>
+</div>
+
+</div>
+</div>
+
+<script src="lupon_settled.js"></script>
+</body>
+</html>
+
